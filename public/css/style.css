@@ -1,0 +1,187 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.chat {
+    height: 99.4vh;
+}
+
+.chat-sidebar {
+    width: 30%;
+    height: 100%;
+    background-color: #0000007d;
+    display: inline-block;
+}
+
+.chat-main {
+    width: 70%;
+    height: 100%;
+    background-color: #f3e7df2b;
+    float: right;
+}
+
+#profileDetails {
+    display: inline-block;
+    width: 100%;
+    height: 7%;
+    background-color: #76b576a3;
+}
+
+#profileDetails .profile-pic {
+    display: inline-block;
+    padding: 5px 5%;
+}
+
+#profileDetails .profile-name {
+    display: inline-block;
+}
+
+#messages {
+    overflow-y: scroll;
+    display: inline-block;
+    height: 85%;
+    width: 100%;
+    background-color: #cdb49352;
+}
+
+.compose {
+    display: inline-block;
+    width: 90%;
+    margin: 0 2%;
+    height: 5%;
+    background-color: grey;
+    border-radius: 30px;
+    padding: 10px 0px 0px 30px;
+}
+
+
+#message {
+    height: 30px;
+    width: 55%;
+    border-radius: 20px;
+}
+
+button {
+    height: 30px;
+    width: 20%;
+    border-radius: 20px;
+}
+
+#send-location {
+    float: left;
+}
+
+span.chat-userName {
+    font-weight: 800;
+}
+
+span.chat-createdAt {
+    font-size: 10px;
+    float: right;
+}
+
+.sender {
+    width: 52%;
+    float: left;
+    border-radius: 20px;
+    padding: 10px;
+    margin: 5px;
+    background-color: white;
+}
+
+.reciver {
+    width: 52%;
+    float: right;
+    border-radius: 20px;
+    padding: 10px;
+    margin: 5px;
+    background-color: #e1fdcc52;
+}
+
+.admin {
+    width: 94%;
+    float: left;
+    border-radius: 20px;
+    padding: 10px;
+    margin: 5px;
+    background-color: #ffffff61;
+}
+
+.admin .chat-userName {
+    display: none;
+}
+
+.message-body {
+    margin: 5px;
+}
+
+
+.centered-box {
+    height: 100vh;
+    width: 100vw;
+    background-color: darkcyan;
+    position: relative;
+}
+
+.form-box {
+    max-width: 400px;
+    min-width: 300px;
+    background-color: #1e81609e;
+    position: absolute;
+    top: 40%;
+    left: 40%;
+    padding: 40px;
+}
+
+#label-join {
+    margin-left: 40%;
+}
+
+.form-box label {
+    display: block;
+}
+
+.form-box input {
+    width: 80%;
+    margin-bottom: 10px;
+    border-radius: 20px;
+    height: 30px;
+}
+
+.alert {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 8px;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+    margin-bottom: 16px;
+}
+
+.userList {
+    display: block;
+    padding: 10px;
+    border: 1px solid #8d5c5c;
+    margin: 10px;
+    cursor: pointer;
+    border-radius: 15px;
+}
+
+.profileOptions {
+    height: 80px;
+    border-radius: 20px;
+    margin: 10px;
+}
+
+.selectedProfile {
+    outline: 2px solid #aff10e;
+}
+
+.profileChat {
+    height: 30px;
+    border-radius: 5px;
+}
+
+.activeChat {
+    background-color: #c3a5a5;
+}

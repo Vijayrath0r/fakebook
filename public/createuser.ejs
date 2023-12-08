@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css">
+    <title>FakeBook</title>
+</head>
+
+<body>
+    <div class="centered-box">
+        <div class="form-box">
+            <span id="label-join">Create User</span><br />
+            <% if (typeof error !=='undefined' && error) { %>
+                <div class="alert">
+                    <p>
+                        <%= error %>
+                    </p>
+                </div>
+                <% } %>
+                    <form method="post" action="/createUser">
+                        <label for="name">Name</label>
+                        <input type="text" name="username" placeholder="Name" required><br />
+                        <label for="Email">Email</label>
+                        <input type="text" name="email" placeholder="Enter you email" required><br />
+                        <label for="Password">Password</label>
+                        <input type="password" name="password" placeholder="Password" required><br />
+                        <input type="hidden" name="profile" id="profile" value="default">
+                        <div class="profileContainer">
+                            <% for(var i=0; i<images.length; i++) {%>
+                                <img class="profileOptions" id="<%= images[i] %>" src="/images/<%= images[i] %>.svg" alt="profile">
+                            <% } %>
+                        </div>
+                        <button type="submit">Create</button>
+                    </form>
+                    <a style="float: right;" href="/">Login</a>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="/js/user.js"></script>
+</body>
+
+</html>
