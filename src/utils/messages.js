@@ -2,9 +2,11 @@ require('../db/mongoose')
 const Message = require('../models/message')
 
 // const message = new Message({
+//     name: "vijay rathor",
 //     from: "vijay",
 //     to: "suraj",
-//     message: "hello"
+//     message: "hello",
+//     messageType:0
 // });
 // message.save()
 const getConversation = async (from, to) => {
