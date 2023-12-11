@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
             }
         }
     },
-    conversationId: {
+    personalId: {
         type: String,
         required: true
     },

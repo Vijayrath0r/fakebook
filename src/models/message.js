@@ -7,10 +7,12 @@ const messageSchema = new mongoose.Schema({
     },
     from: {
         type: String,
+        ref: 'User', // refering to the personalId from User
         required: true
     },
     to: {
         type: String,
+        ref: 'Conversation', // refering to the conversationId from Conversation
         required: true
     },
     message: {
@@ -20,13 +22,11 @@ const messageSchema = new mongoose.Schema({
     messageType: {
         type: Number,
         required: true,
-        default: 0
+        default: 0 // 0 for normal message, 1 for location message
     }
-
 }, {
     timestamps: true
-})
-
+});
 const Message = mongoose.model('Message', messageSchema)
 
 module.exports = Message

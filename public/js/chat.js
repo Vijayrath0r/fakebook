@@ -91,7 +91,8 @@ $("#send-location").on("click", () => {
 });
 
 const changeReciver = (reciver) => {
-    socket.emit("chatUserDetails", reciver, (userDetails) => {
+    socket.emit("chatUserDetails", { reciver, sender }, (userDetails) => {
+        console.log('userDetails - ', userDetails);
         const { name, profile } = userDetails[0];
         const template = $("#profile-template").html();
         const html = Mustache.render(template, {
@@ -100,9 +101,9 @@ const changeReciver = (reciver) => {
         });
         $("#profileDetails").html(html);
     })
-    socket.emit("getconversation", { sender, reciver ,sender }, (messages) => {
+    socket.emit("getconversation", { sender, reciver, sender }, (messages) => {
         const template = $("#messages-template").html();
-        const html = Mustache.render(template, {messages});
+        const html = Mustache.render(template, { messages });
         $("#messages").html(html);
     })
     $("#reciver").val(reciver)

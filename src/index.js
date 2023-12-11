@@ -5,10 +5,12 @@ const moment = require("moment");
 const socketio = require("socket.io");
 const { generateMessage, saveMessage, getConversation } = require("./utils/messages.js")
 const { addUser, removeUser, getUser, getUsersInRoom } = require("./utils/users.js")
+const { getConversationId, createNewConversation } = require("./utils/conversation.js")
 require('./db/mongoose')
 const Users = require('./models/users')
 const session = require('express-session');
 const flash = require('express-flash');
+const { send } = require("process");
 
 const app = express();
 const server = http.createServer(app);
@@ -27,6 +29,11 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/', async (req, res) => {
     const error = req.flash('error')[0] || null; // Get the flash message
     res.render('index', { error });
+})
+
+app.get('/login', async (req, res) => {
+    const error = req.flash('error')[0] || null; // Get the flash message
+    res.render('new', { error });
 })
 
 app.get('/createUser', async (req, res) => {
@@ -64,10 +71,8 @@ io.on("connection", (socket) => {
 
     socket.on("join", async (sender, callback) => {
         const user = await getUser(sender);
-        const room = user[0].conversationId;
+        const room = user[0].personalId;
         socket.join(room);
-        // socket.emit("message", generateMessage("Admin", "WelCome", room), () => { });
-        // socket.broadcast.to(room).emit("message", generateMessage("Admin", `${user.name} has joined.`, room));
         io.to(room).emit("roomData", {
             room: user[0].name,
             users: await getUsersInRoom(room)
@@ -77,7 +82,9 @@ io.on("connection", (socket) => {
     socket.on("sendMessage", async ({ message, from, to }, callback) => {
         const user = await getUser(from);
         if (message != '') {
-            io.to(to).emit("message", generateMessage(user[0].name, message, from));
+            let conversationData = await getConversationId(to, from);
+            let conversationId = conversationData[0].conversationId;
+            io.to(conversationId).emit("message", generateMessage(user[0].name, message, from));
             if (from != to) {
                 io.to(from).emit("message", generateMessage(user[0].name, message, from));
             }
@@ -89,7 +96,9 @@ io.on("connection", (socket) => {
     socket.on("sendLocation", async (coords, callback) => {
         const user = await getUser(coords.from);
         const message = `https://www.google.com/maps?q=${coords.latitude},${coords.longitude}`;
-        io.to(coords.to).emit("LocationMessage", generateMessage(user[0].name, message, coords.from));
+        let conversationData = await getConversationId(coords.to, coords.from);
+        let conversationId = conversationData[0].conversationId;
+        io.to(conversationId).emit("LocationMessage", generateMessage(user[0].name, message, coords.from));
         if (coords.from != coords.to) {
             io.to(coords.from).emit("message", generateMessage(user[0].name, message, coords.from));
         }
@@ -100,19 +109,31 @@ io.on("connection", (socket) => {
     socket.on("disconnect", () => {
         const user = removeUser(socket.id);
         if (user) {
-            // io.to(user.room).emit("message", generateMessage("Admin", `${user.username} has left.`), socket.id)
             io.to(user.room).emit("roomData", {
                 room: user.room,
                 users: getUsersInRoom(user.room)
             })
         }
     });
-    socket.on("chatUserDetails", async (id, callback) => {
-        const user = await getUser(id);
+    socket.on("chatUserDetails", async ({ reciver, sender }, callback) => {
+        let conversationId;
+        const user = await getUser(reciver);
+        if (reciver == sender) {
+            conversationId = user[0].personalId
+        } else {
+            let conversationData = await getConversationId(reciver, sender);
+            if (conversationData.length < 1) {
+                conversationData = await createNewConversation(reciver, sender);
+                conversationId = conversationData.conversationId
+            } else {
+                conversationId = conversationData[0].conversationId
+            }
+        }
+        socket.join(conversationId);
         callback(user);
     })
 
-    socket.on("getconversation", async ({ sender, reciver ,logedUser}, callback) => {
+    socket.on("getconversation", async ({ sender, reciver, logedUser }, callback) => {
         const messagesArray = await getConversation(sender, reciver);
         const messages = [];
         messagesArray.forEach(message => {
@@ -125,7 +146,6 @@ io.on("connection", (socket) => {
             temp.senderClass = (sender == message.from ? "reciver" : "sender")
             messages.push(temp)
         });
-        console.log('messages - ',messages);
         callback(messages)
     })
 });
