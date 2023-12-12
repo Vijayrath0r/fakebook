@@ -29,7 +29,7 @@ socket.on("message", (message) => {
         username: message.username,
         message: message.text,
         createdAt: moment(message.createdAt).format("h:mm a"),
-        senderClass: (message.username == "Admin") ? "admin" : (sender == message.from ? "reciver" : "sender")
+        senderClass: (message.username == "Admin") ? "admin" : (sender == message.from ? "other-message float-right" : "my-message")
     });
     const messagesContainer = $("#messages")[0];
     messagesContainer.insertAdjacentHTML('beforeend', html);
@@ -42,7 +42,7 @@ socket.on("LocationMessage", (message) => {
         username: message.username,
         message: message.text,
         createdAt: moment(message.createdAt).format("h:mm a"),
-        senderClass: (message.username == "Admin") ? "admin" : (sender == message.from ? "reciver" : "sender")
+        senderClass: (message.username == "Admin") ? "admin" : (sender == message.from ? "other-message float-right" : "my-message")
     });
     const messagesContainer = $("#messages")[0];
     messagesContainer.insertAdjacentHTML('beforeend', html);
@@ -107,8 +107,8 @@ const changeReciver = (reciver) => {
         $("#messages").html(html);
     })
     $("#reciver").val(reciver)
-    $('.userList').removeClass('activeChat');
-    $("#" + reciver).addClass("activeChat");
+    $('.userList').removeClass('active');
+    $("#" + reciver).addClass("active");
 }
 
 socket.emit("join", sender, (error) => {

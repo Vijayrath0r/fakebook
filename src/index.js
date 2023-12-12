@@ -84,7 +84,7 @@ io.on("connection", (socket) => {
         if (message != '') {
             let conversationData = await getConversationId(to, from);
             let conversationId = conversationData[0].conversationId;
-            io.to(conversationId).emit("message", generateMessage(user[0].name, message, from));
+            socket.broadcast.to(conversationId).emit("message", generateMessage(user[0].name, message, from));
             if (from != to) {
                 io.to(from).emit("message", generateMessage(user[0].name, message, from));
             }
@@ -98,7 +98,7 @@ io.on("connection", (socket) => {
         const message = `https://www.google.com/maps?q=${coords.latitude},${coords.longitude}`;
         let conversationData = await getConversationId(coords.to, coords.from);
         let conversationId = conversationData[0].conversationId;
-        io.to(conversationId).emit("LocationMessage", generateMessage(user[0].name, message, coords.from));
+        socket.broadcast.to(conversationId).emit("LocationMessage", generateMessage(user[0].name, message, coords.from));
         if (coords.from != coords.to) {
             io.to(coords.from).emit("message", generateMessage(user[0].name, message, coords.from));
         }
@@ -143,7 +143,7 @@ io.on("connection", (socket) => {
             temp.to = message.to
             temp.message = message.message
             temp.createdAt = moment(message.createdAt).format("h:mm a"),
-            temp.senderClass = (sender == message.from ? "reciver" : "sender")
+            temp.senderClass = (sender == message.from ? "other-message float-right" : "my-message")
             messages.push(temp)
         });
         callback(messages)

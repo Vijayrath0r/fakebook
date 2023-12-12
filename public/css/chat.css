@@ -96,11 +96,23 @@ body {
     justify-content: end;
 }
 
+#messageForm {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
+
+.input-group-text {
+    padding: 0.575rem 1.75rem !important;
+}
+
 .chat .chat-history {
     padding: 20px;
     border-bottom: 2px solid #fff;
     max-height: 720px;
+    min-height: 700px;
     overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 .chat .chat-history ul {
@@ -197,7 +209,7 @@ span.message-data-time {
 .chat .chat-history .other-message:after {
     transform: rotate(90deg);
     border-bottom-color: #e8f1f3;
-    right: -4.5% !important;
+    right: -20px;
     left: auto;
     top: 20px;
 }
