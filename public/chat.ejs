@@ -24,12 +24,35 @@
                             <input type="hidden" id="sender" value="<%= user.personalId %>">
                             <input type="hidden" id="reciver" value="<%= user.personalId %>">
                             <span>FakeBook</span>
-                            <h2>
-                                <%= user.name %>
-                            </h2>
                         </div>
-                        <ul class="list-unstyled chat-list mt-2 mb-0 chat-list" id="chat-sidebar">
-                        </ul>
+                        <div class="clearfix userList self-details" id="<%= user.personalId %>"
+                            onclick=changeReciver('<%=user.personalId %>')>
+                            <div>
+                                <img src="/images/<%= user.profile %>.svg" alt="avatar">
+                                <div class="about">
+                                    <div class="name">
+                                        <%= user.name %>
+                                    </div>
+                                    <div class="status"> <i class="fa fa-circle offline"></i> left 7 mins ago </div>
+                                </div>
+                                <div><i class="fa fa-gear" id="self-settings-icon"></i></i></div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    Contacts
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+                                data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <ul class="list-unstyled chat-list mt-2 mb-0" id="chat-sidebar">
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="chat">
                         <div class="chat-header clearfix">

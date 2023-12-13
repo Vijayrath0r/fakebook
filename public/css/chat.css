@@ -59,6 +59,30 @@ body {
     border-radius: 50%
 }
 
+.self-details {
+    padding: 10px 15px;
+    list-style: none;
+    border-radius: 3px
+}
+
+.self-details img {
+    width: 50px;
+}
+
+
+.self-details:hover {
+    background: #efefef;
+    cursor: pointer
+}
+
+.self-details.active {
+    background: #efefef
+}
+
+#self-settings-icon {
+    padding: 18px;
+}
+
 .people-list img {
     float: left;
     border-radius: 50%

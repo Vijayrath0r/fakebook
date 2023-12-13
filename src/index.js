@@ -4,7 +4,7 @@ const express = require("express");
 const moment = require("moment");
 const socketio = require("socket.io");
 const { generateMessage, saveMessage, getConversation } = require("./utils/messages.js")
-const { addUser, removeUser, getUser, getUsersInRoom } = require("./utils/users.js")
+const { addUser, removeUser, getUser, getUsersInRoom, getContactsOfUserByPersoanalId } = require("./utils/users.js")
 const { getConversationId, createNewConversation } = require("./utils/conversation.js")
 require('./db/mongoose')
 const Users = require('./models/users')
@@ -75,7 +75,7 @@ io.on("connection", (socket) => {
         socket.join(room);
         io.to(room).emit("roomData", {
             room: user[0].name,
-            users: await getUsersInRoom(room)
+            users: await getContactsOfUserByPersoanalId(room)
         })
         callback({ userId: socket.id, code: 200 })
     })
@@ -111,7 +111,7 @@ io.on("connection", (socket) => {
         if (user) {
             io.to(user.room).emit("roomData", {
                 room: user.room,
-                users: getUsersInRoom(user.room)
+                users: getContactsOfUserByPersoanalId(user.room)
             })
         }
     });

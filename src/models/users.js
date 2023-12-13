@@ -31,7 +31,13 @@ const userSchema = new mongoose.Schema({
     profile: {
         type: String,
         required: true
-    }
+    },
+    friends: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User' // 'User' should match the model name
+        }
+    ]
 }, {
     timestamps: true
 })

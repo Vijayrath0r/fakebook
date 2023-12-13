@@ -34,10 +34,34 @@ const getUsersInRoom = async (room) => {
     return await Users.find({}, "name personalId profile");
 }
 
+const getContactsOfUserByPersoanalId = async (personalId) => {
+    try {
+        // Find the user by the provided id and populate the 'friends' field
+        const user = await Users.findOne({ personalId }).populate('friends', 'name personalId profile');
+
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        // Extract the relevant information from the populated 'friends' field
+        const contacts = user.friends.map(friend => ({
+            name: friend.name,
+            personalId: friend.personalId,
+            profile: friend.profile,
+        }));
+        return contacts;
+    } catch (error) {
+        // Handle errors, e.g., user not found or database error
+        console.error('Error fetching contacts:', error.message);
+        throw error;
+    }
+}
+
 
 module.exports = {
     addUser,
     removeUser,
     getUser,
-    getUsersInRoom
+    getUsersInRoom,
+    getContactsOfUserByPersoanalId
 }

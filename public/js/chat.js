@@ -9,18 +9,18 @@ const { username, room } = Qs.parse(location.search, {
     ignoreQueryPrefix: true
 })
 const autoScroll = () => {
-    const newMessage = $(".message:last-child")[0];
-    const newMessageStyle = getComputedStyle(newMessage);
-    const newMessageHeight = newMessage.offsetHeight;
+    // const newMessage = $(".message:last-child")[0];
+    // const newMessageStyle = getComputedStyle(newMessage);
+    // const newMessageHeight = newMessage.offsetHeight;
 
-    const visibleHeight = $("#messages")[0].offsetHeight;
-    const containerHeight = $("#messages")[0].scrollHeight;
+    // const visibleHeight = $(".chat-history")[0].offsetHeight;
+    // const containerHeight = $(".chat-history")[0].scrollHeight;
 
-    const scrollOffset = $("#messages")[0].scrollTop + visibleHeight;
+    // const scrollOffset = $(".chat-history")[0].scrollTop + visibleHeight;
 
-    $("#messages")[0].scrollTop = containerHeight;
-    if (containerHeight - newMessageHeight <= scrollOffset) {
-    }
+    // $(".chat-history")[0].scrollTop = containerHeight;
+    // if (containerHeight - newMessageHeight <= scrollOffset) {
+    // }
 }
 
 socket.on("message", (message) => {
@@ -92,7 +92,6 @@ $("#send-location").on("click", () => {
 
 const changeReciver = (reciver) => {
     socket.emit("chatUserDetails", { reciver, sender }, (userDetails) => {
-        console.log('userDetails - ', userDetails);
         const { name, profile } = userDetails[0];
         const template = $("#profile-template").html();
         const html = Mustache.render(template, {
@@ -109,6 +108,7 @@ const changeReciver = (reciver) => {
     $("#reciver").val(reciver)
     $('.userList').removeClass('active');
     $("#" + reciver).addClass("active");
+    autoScroll();
 }
 
 socket.emit("join", sender, (error) => {
@@ -120,4 +120,7 @@ socket.emit("join", sender, (error) => {
         sessionStorage.setItem("logedUser", error.userId);
     }
 
+})
+$("#self-settings-icon").on("click", () => {
+    console.log('settings clicked');
 })
