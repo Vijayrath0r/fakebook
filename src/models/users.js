@@ -44,7 +44,7 @@ const userSchema = new mongoose.Schema({
     },
     onlineStatus: {
         type: Number,
-        enum: [0, 1],
+        enum: [0, 1], // 0 for offline and 1 for online
         default: 0
     }
 }, {

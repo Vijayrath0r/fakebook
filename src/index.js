@@ -67,16 +67,19 @@ app.post('/login', async (req, res) => {
     }
 });
 
+const udpateUserList = async (roomName) => {
+    const contacts = await getContactsOfUserByPersoanalId(roomName);
+    io.to(roomName).emit("roomData", {
+        users: contacts
+    })
+}
 io.on("connection", (socket) => {
 
     socket.on("join", async (sender, callback) => {
         const user = await getUser(sender);
         const room = user[0].personalId;
         socket.join(room);
-        io.to(room).emit("roomData", {
-            room: user[0].name,
-            users: await getContactsOfUserByPersoanalId(room)
-        })
+        udpateUserList(room);
         markOnline(user[0].personalId, socket.id)
         callback({ userId: socket.id, code: 200 })
     })
@@ -150,6 +153,10 @@ io.on("connection", (socket) => {
             messages.push(temp)
         });
         callback(messages)
+    })
+    socket.on("updateUserList", async ({ sender }, callback) => {
+        udpateUserList(sender);
+        callback("list Updated");
     })
 });
 

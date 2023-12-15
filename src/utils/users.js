@@ -17,9 +17,8 @@ const addUser = async (userData) => {
         return { error: 'Email is Aleardy taken' }
     }
     const userdata = { name, email, password, personalId, profile }
-    console.log('userData - ', userData);
-    // const user = new Users(userdata)
-    // user.save()
+    const user = new Users(userdata)
+    user.save()
     return { user };
 }
 
@@ -40,20 +39,67 @@ const getUsersInRoom = async (room) => {
 
 const markOnline = async (personalId, socketId) => {
     onlineUsers[personalId] = socketId;
-    console.log(onlineUsers);
+    try {
+        const user = await Users.findOne({ personalId });
+        if (user) {
+            user.onlineStatus = 1;
+            user.lastOnline = new Date();
+            await user.save();
+        }
+        return user;
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
 }
 
 const isUserOnline = (userId) => {
     return (onlineUsers[userId]) ? true : false;
 }
 
-const markOffline = (socketId) => {
-    const userId = Object.keys(onlineUsers).find(key => onlineUsers[key] === socketId);
-    if (userId) {
-        delete onlineUsers[userId];
-        return userId;
+const markOffline = async (socketId) => {
+    try {
+        const userId = Object.keys(onlineUsers).find(key => onlineUsers[key] === socketId);
+        if (userId) {
+            const user = await Users.findOne({ personalId:userId });
+            if (user) {
+                user.onlineStatus = 0;
+                user.lastOnline = new Date();
+                await user.save();
+            }
+            delete onlineUsers[userId];
+            return userId;
+        }
+    } catch (error) {
     }
     return null;
+}
+
+const getLastOnlineTime = async (personalId) => {
+    try {
+        let user = await Users.findOne({ personalId }).select("lastOnline").exec();
+
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        let nowTime = new Date();
+        let lastOnlineTime = new Date(user.lastOnline);
+        let timeDifference = Math.floor((nowTime - lastOnlineTime) / 1000); // Convert to seconds
+
+        if (timeDifference < 60) {
+            return `left ${timeDifference} seconds ago`;
+        } else if (timeDifference < 3600) {
+            let minutes = Math.floor(timeDifference / 60);
+            return `left ${minutes} minutes ago`;
+        } else {
+            let hours = Math.floor(timeDifference / 3600);
+            return `left ${hours} hours ago`;
+        }
+    } catch (error) {
+        console.error('Error getting last online time:', error.message);
+        throw error;
+    }
 }
 
 const getContactsOfUserByPersoanalId = async (personalId) => {
@@ -65,15 +111,18 @@ const getContactsOfUserByPersoanalId = async (personalId) => {
             throw new Error('User not found');
         }
 
-        // Extract the relevant information from the populated 'friends' field
-        const contacts = user.friends.map(friend => ({
+        const contacts = user.friends.map(async friend => ({
             name: friend.name,
             personalId: friend.personalId,
             profile: friend.profile,
             onlineStatus: (isUserOnline(friend.personalId) ? "online" : "offline"),
-            onlineTime: (isUserOnline(friend.personalId) ? "Online" : "left 7 mins ago")
+            onlineTime: (isUserOnline(friend.personalId) ? "Online" : await getLastOnlineTime(friend.personalId))
         }));
-        return contacts;
+
+        // Use Promise.all to wait for all the asynchronous getLastOnlineTime calls to complete
+        const resolvedContacts = await Promise.all(contacts);
+
+        return resolvedContacts;
     } catch (error) {
         // Handle errors, e.g., user not found or database error
         console.error('Error fetching contacts:', error.message);

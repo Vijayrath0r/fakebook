@@ -37,7 +37,6 @@ const showMessages = (message) => {
             dateClass: message.dateClass
         });
         messagesContainer.insertAdjacentHTML('beforeend', html);
-        console.log('Location');
     } else {
         const html = Mustache.render(textTemplate, {
             username: message.name,
@@ -47,7 +46,6 @@ const showMessages = (message) => {
             dateClass: message.dateClass
         });
         messagesContainer.insertAdjacentHTML('beforeend', html);
-        console.log('text');
     }
 }
 
@@ -75,13 +73,8 @@ socket.on("LocationMessage", (message) => {
     showMessages(tempMessage)
 });
 
-socket.on("roomData", ({ room, users }) => {
-    console.log('users - ', users);
-    const html = Mustache.render(sideBarTemplate, {
-        room,
-        users
-    });
-    $("#chat-sidebar").html(html);
+socket.on("roomData", ({ users }) => {
+    const html = Mustache.render(sideBarTemplate, { users }); $("#chat-sidebar").html(html);
 })
 
 $("#messageForm").on("submit", (e) => {
@@ -152,5 +145,13 @@ socket.emit("join", sender, (error) => {
 
 })
 $("#self-settings-icon").on("click", () => {
-    console.log('settings clicked');
+})
+
+$("#refreshContacts").on("click", () => {
+    if (!$("#refreshContacts").hasClass("fa-spin")) {
+        $("#refreshContacts").addClass('fa-spin');
+        socket.emit("updateUserList", { sender }, (message) => {
+            $("#refreshContacts").removeClass('fa-spin');
+        })
+    }
 })
