@@ -37,7 +37,16 @@ const userSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User' // 'User' should match the model name
         }
-    ]
+    ],
+    lastOnline: {
+        type: Date,
+        default: () => new Date()
+    },
+    onlineStatus: {
+        type: Number,
+        enum: [0, 1],
+        default: 0
+    }
 }, {
     timestamps: true
 })

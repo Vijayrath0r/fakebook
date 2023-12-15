@@ -33,7 +33,7 @@
                                     <div class="name">
                                         <%= user.name %>
                                     </div>
-                                    <div class="status"> <i class="fa fa-circle offline"></i> left 7 mins ago </div>
+                                    <div class="status"> <i class="fa fa-circle online"></i> Online </div>
                                 </div>
                                 <div><i class="fa fa-gear" id="self-settings-icon"></i></i></div>
                             </div>
@@ -111,8 +111,8 @@
     </script>
     <script id="message-template" type="text/html">
         <li class="clearfix">
-            <div class="message-data text-right">
-                <span class="message-data-time">{{username}} -{{createdAt}}</span>
+            <div class="message-data {{dateClass}}">
+                <span class="message-data-time">{{createdAt}}</span>
             </div>
             <div class="message {{senderClass}}"> {{message}} </div>
         </li>
@@ -120,7 +120,7 @@
     <script id="messages-template" type="text/html">
         {{#messages}}
         <li class="clearfix">
-            <div class="message-data text-right">
+            <div class="message-data {{dateClass}}">
                 <span class="message-data-time">{{name}} -{{createdAt}}</span>
             </div>
             <div class="message {{senderClass}}"> {{message}} </div>
@@ -128,13 +128,12 @@
         {{/messages}}
     </script>
     <script id="Locationmessage-template" type="text/html">
-        <div class="message {{senderClass}}">
-            <div class="message-header">
-                <span class="chat-userName">{{username}}</span>
-                <span class="chat-createdAt">{{createdAt}}</span>
+        <li class="clearfix">
+            <div class="message-data {{dateClass}}">
+                <span class="message-data-time">{{createdAt}}</span>
             </div>
-            <div class="message-body"><a href="{{message}}" target="_blank" >My Location</a> </div>
-        </div>
+            <div class="message {{senderClass}}"> <iframe src="{{message}}&amp;t=&amp;z=13&amp;ie=UTF8&amp;iwloc=&amp;output=embed" width=300 height=150 allowfullscreen></iframe> </div>
+        </li>
     </script>
 
     <script id="sidebar-template" type="text/html">
@@ -143,7 +142,7 @@
                     <img src="/images/{{profile}}.svg" alt="avatar">
                     <div class="about">
                         <div class="name">{{name}}</div>
-                        <div class="status"> <i class="fa fa-circle offline"></i> left 7 mins ago </div>
+                        <div class="status"> <i class="fa fa-circle {{onlineStatus}}"></i> {{onlineTime}} </div>
                     </div>
                 </li>
             {{/users}}

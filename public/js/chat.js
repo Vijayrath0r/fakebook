@@ -3,6 +3,11 @@ const logedusersEmail = $("#email").val();
 const sender = $("#sender").val();
 const logedName = $("#logedName").val();
 const reciver = $("#reciver").val();
+const textTemplate = $("#message-template").html();
+const Locationtemplate = $("#Locationmessage-template").html();
+const sideBarTemplate = $("#sidebar-template").html();
+const messagesContainer = $("#messages")[0];
+
 
 
 const { username, room } = Qs.parse(location.search, {
@@ -22,36 +27,57 @@ const autoScroll = () => {
     // if (containerHeight - newMessageHeight <= scrollOffset) {
     // }
 }
+const showMessages = (message) => {
+    if (message.messageType) {
+        const html = Mustache.render(Locationtemplate, {
+            username: message.name,
+            message: message.message,
+            createdAt: message.createdAt,
+            senderClass: message.senderClass,
+            dateClass: message.dateClass
+        });
+        messagesContainer.insertAdjacentHTML('beforeend', html);
+        console.log('Location');
+    } else {
+        const html = Mustache.render(textTemplate, {
+            username: message.name,
+            message: message.message,
+            createdAt: message.createdAt,
+            senderClass: message.senderClass,
+            dateClass: message.dateClass
+        });
+        messagesContainer.insertAdjacentHTML('beforeend', html);
+        console.log('text');
+    }
+}
 
 socket.on("message", (message) => {
-    const template = $("#message-template").html();
-    const html = Mustache.render(template, {
+    const tempMessage = {
         username: message.username,
         message: message.text,
         createdAt: moment(message.createdAt).format("h:mm a"),
-        senderClass: (message.username == "Admin") ? "admin" : (sender == message.from ? "other-message float-right" : "my-message")
-    });
-    const messagesContainer = $("#messages")[0];
-    messagesContainer.insertAdjacentHTML('beforeend', html);
-    autoScroll();
+        senderClass: sender == message.from ? "other-message float-right" : "my-message",
+        dateClass: sender == message.from ? "text-right" : "text-left",
+        messageType: 0
+    }
+    showMessages(tempMessage)
 });
 
 socket.on("LocationMessage", (message) => {
-    const template = $("#Locationmessage-template").html();
-    const html = Mustache.render(template, {
+    const tempMessage = {
         username: message.username,
         message: message.text,
         createdAt: moment(message.createdAt).format("h:mm a"),
-        senderClass: (message.username == "Admin") ? "admin" : (sender == message.from ? "other-message float-right" : "my-message")
-    });
-    const messagesContainer = $("#messages")[0];
-    messagesContainer.insertAdjacentHTML('beforeend', html);
-    autoScroll();
+        senderClass: sender == message.from ? "other-message float-right" : "my-message",
+        dateClass: sender == message.from ? "text-right" : "text-left",
+        messageType: 1
+    }
+    showMessages(tempMessage)
 });
 
 socket.on("roomData", ({ room, users }) => {
-    const template = $("#sidebar-template").html();
-    const html = Mustache.render(template, {
+    console.log('users - ', users);
+    const html = Mustache.render(sideBarTemplate, {
         room,
         users
     });
@@ -101,14 +127,18 @@ const changeReciver = (reciver) => {
         $("#profileDetails").html(html);
     })
     socket.emit("getconversation", { sender, reciver, sender }, (messages) => {
-        const template = $("#messages-template").html();
-        const html = Mustache.render(template, { messages });
-        $("#messages").html(html);
+        $("#messages").html('');
+        messages.forEach(message => {
+            showMessages(message);
+        });
+        // const template = $("#messages-template").html();
+        // const html = Mustache.render(template, { messages });
+        // $("#messages").html(html);
     })
     $("#reciver").val(reciver)
     $('.userList').removeClass('active');
     $("#" + reciver).addClass("active");
-    autoScroll();
+    // autoScroll();
 }
 
 socket.emit("join", sender, (error) => {

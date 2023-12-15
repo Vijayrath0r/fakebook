@@ -4,7 +4,7 @@ const express = require("express");
 const moment = require("moment");
 const socketio = require("socket.io");
 const { generateMessage, saveMessage, getConversation } = require("./utils/messages.js")
-const { addUser, removeUser, getUser, getUsersInRoom, getContactsOfUserByPersoanalId } = require("./utils/users.js")
+const { addUser, removeUser, getUser, getContactsOfUserByPersoanalId, markOnline, markOffline } = require("./utils/users.js")
 const { getConversationId, createNewConversation } = require("./utils/conversation.js")
 require('./db/mongoose')
 const Users = require('./models/users')
@@ -77,6 +77,7 @@ io.on("connection", (socket) => {
             room: user[0].name,
             users: await getContactsOfUserByPersoanalId(room)
         })
+        markOnline(user[0].personalId, socket.id)
         callback({ userId: socket.id, code: 200 })
     })
     socket.on("sendMessage", async ({ message, from, to }, callback) => {
@@ -100,20 +101,20 @@ io.on("connection", (socket) => {
         let conversationId = conversationData[0].conversationId;
         socket.broadcast.to(conversationId).emit("LocationMessage", generateMessage(user[0].name, message, coords.from));
         if (coords.from != coords.to) {
-            io.to(coords.from).emit("message", generateMessage(user[0].name, message, coords.from));
+            io.to(coords.from).emit("LocationMessage", generateMessage(user[0].name, message, coords.from));
         }
         saveMessage(user[0].name, message, coords.from, coords.to, 1);
         callback("Location sent.");
     });
 
     socket.on("disconnect", () => {
-        const user = removeUser(socket.id);
-        if (user) {
-            io.to(user.room).emit("roomData", {
-                room: user.room,
-                users: getContactsOfUserByPersoanalId(user.room)
-            })
-        }
+        const user = markOffline(socket.id);
+        // if (user) {
+        //     io.to(user.room).emit("roomData", {
+        //         room: user.room,
+        //         users: getContactsOfUserByPersoanalId(user.room)
+        //     })
+        // }
     });
     socket.on("chatUserDetails", async ({ reciver, sender }, callback) => {
         let conversationId;
@@ -138,12 +139,14 @@ io.on("connection", (socket) => {
         const messages = [];
         messagesArray.forEach(message => {
             const temp = {};
-            temp.name = message.name,
-            temp.from = message.from,
+            temp.name = message.name
+            temp.from = message.from
             temp.to = message.to
+            temp.messageType = message.messageType
             temp.message = message.message
-            temp.createdAt = moment(message.createdAt).format("h:mm a"),
+            temp.createdAt = moment(message.createdAt).format("h:mm a")
             temp.senderClass = (sender == message.from ? "other-message float-right" : "my-message")
+            temp.dateClass = (sender == message.from ? "text-right" : "text-left")
             messages.push(temp)
         });
         callback(messages)
