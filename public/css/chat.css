@@ -46,7 +46,7 @@ body {
 }
 
 .people-list .chat-list li {
-    padding: 10px 15px;
+    padding: 10px 10px 0px 10px;
     list-style: none;
     border-radius: 3px
 }
@@ -283,6 +283,37 @@ span.message-data-time {
     content: " ";
     clear: both;
     height: 0
+}
+
+.waviy {
+    display: inline-block;
+    visibility: hidden;
+}
+
+.waviy span {
+    font-size: 13px;
+    font-family: 'Alfa Slab One', cursive;
+    position: relative;
+    display: inline-block;
+    color: #15c925;
+}
+
+.waviy span.Jump {
+    animation: waviy 1s infinite;
+    animation-delay: calc(.1s * var(--i));
+}
+
+@keyframes waviy {
+
+    0%,
+    40%,
+    100% {
+        transform: translateY(0)
+    }
+
+    20% {
+        transform: translateY(-5px)
+    }
 }
 
 @media only screen and (max-width: 767px) {

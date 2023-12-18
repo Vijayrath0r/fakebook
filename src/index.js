@@ -16,7 +16,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 const publicDirectoryPath = path.join(__dirname, "../public");
 app.set('view engine', 'ejs');
 app.set('views', publicDirectoryPath);
@@ -157,6 +157,11 @@ io.on("connection", (socket) => {
     socket.on("updateUserList", async ({ sender }, callback) => {
         udpateUserList(sender);
         callback("list Updated");
+    })
+    socket.on("typingSever", async ({ sender, reciver }) => {
+        if (sender != reciver) {
+            io.emit("typingClient", { senderTyping: sender, reciverTyping: reciver })
+        }
     })
 });
 

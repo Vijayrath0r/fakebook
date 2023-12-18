@@ -155,3 +155,27 @@ $("#refreshContacts").on("click", () => {
         })
     }
 })
+
+var typingTimer;
+let typingTimeout;
+var doneTypingInterval = 500;
+$("#message").on("input", () => {
+    clearTimeout(typingTimer);
+    typingTimer = setTimeout(function () {
+        const reciver = $("#reciver").val();
+        socket.emit("typingSever", { sender, reciver })
+    }, doneTypingInterval);
+});
+
+socket.on("typingClient", ({ senderTyping, reciverTyping }) => {
+    if (reciverTyping == sender) {
+        $("#" + senderTyping + " .waviy").css("visibility", "visible");
+    }
+    if (typingTimeout) {
+        clearTimeout(typingTimeout);
+    }
+    typingTimeout = setTimeout(() => {
+        $("#" + senderTyping + " .waviy").css("visibility", "hidden");
+        typingTimeout = null;
+    }, 2000);
+})
