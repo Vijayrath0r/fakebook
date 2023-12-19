@@ -4,7 +4,7 @@ const express = require("express");
 const moment = require("moment");
 const socketio = require("socket.io");
 const { generateMessage, saveMessage, getConversation } = require("./utils/messages.js")
-const { addUser, removeUser, getUser, getContactsOfUserByPersoanalId, markOnline, markOffline } = require("./utils/users.js")
+const { addUser, removeUser, getUser, getContactsOfUserByPersoanalId, markOnline, markOffline, searchContactsForUser } = require("./utils/users.js")
 const { getConversationId, createNewConversation } = require("./utils/conversation.js")
 require('./db/mongoose')
 const Users = require('./models/users')
@@ -164,6 +164,10 @@ io.on("connection", (socket) => {
         if (sender != reciver) {
             io.emit("typingClient", { senderTyping: sender, reciverTyping: reciver })
         }
+    })
+    socket.on('findContacts', async ({ sender, searchText }, callback) => {
+        const contactList = await searchContactsForUser(sender, searchText);
+        callback(contactList);
     })
 });
 

@@ -1,4 +1,7 @@
 const socket = io();
+var typingTimer;
+let typingTimeout;
+var doneTypingInterval = 500;
 const logedusersEmail = $("#email").val();
 const sender = $("#sender").val();
 const logedName = $("#logedName").val();
@@ -7,6 +10,8 @@ const textTemplate = $("#message-template").html();
 const Locationtemplate = $("#Locationmessage-template").html();
 const sideBarTemplate = $("#sidebar-template").html();
 const messagesContainer = $("#messages")[0];
+const addContactTemplate = $("#addContact-template").html();
+const addContactListTemplate = $("#addContactList-template").html();
 
 
 
@@ -85,6 +90,7 @@ socket.on("message", (message) => {
         messageType: 0
     }
     showMessages(tempMessage)
+    $('.chat-history').animate({ scrollTop: 9999 }, 'slow');
 });
 
 socket.on("LocationMessage", (message) => {
@@ -97,6 +103,7 @@ socket.on("LocationMessage", (message) => {
         messageType: 1
     }
     showMessages(tempMessage)
+    $('.chat-history').animate({ scrollTop: 9999 }, 'slow');
 });
 
 socket.on("roomData", ({ users }) => {
@@ -145,11 +152,14 @@ const changeReciver = (reciver) => {
         });
         $("#profileDetails").html(html);
     })
+    $(".ms-headerBtn").show();
+    $(".chat-message").show();
     socket.emit("getconversation", { sender, reciver, sender }, (messages) => {
         $("#messages").html('');
         messages.forEach(message => {
             showMessages(message);
         });
+        $('.chat-history').animate({ scrollTop: 9999 }, 'slow');
         // const template = $("#messages-template").html();
         // const html = Mustache.render(template, { messages });
         // $("#messages").html(html);
@@ -182,9 +192,6 @@ $("#refreshContacts").on("click", () => {
     }
 })
 
-var typingTimer;
-let typingTimeout;
-var doneTypingInterval = 500;
 $("#message").on("input", () => {
     clearTimeout(typingTimer);
     typingTimer = setTimeout(function () {
@@ -212,4 +219,21 @@ socket.on("showNotification", ({ senderNotifincation, reciverNotification, userN
             showNotification(userName, message);
         }
     }
+})
+
+$("#addContacts").on("click", () => {
+    $("#profileDetails").html("<h2>add contact</h2>")
+    $(".ms-headerBtn").hide();
+    $(".chat-message").hide();
+    const html = Mustache.render(addContactTemplate, { name: "vijay" })
+    $("#messages").html(html)
+})
+
+$(document.body).on('click', '#searchContactbtn', function () {
+    let searchText = $('#searchContactInput').val();
+    socket.emit("findContacts", { sender, searchText }, (userList) => {
+        console.log(userList);
+        const html = Mustache.render(addContactListTemplate, { userList })
+        $("#searchResult").html(html)
+    })
 })

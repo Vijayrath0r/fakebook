@@ -61,7 +61,7 @@ const markOffline = async (socketId) => {
     try {
         const userId = Object.keys(onlineUsers).find(key => onlineUsers[key] === socketId);
         if (userId) {
-            const user = await Users.findOne({ personalId:userId });
+            const user = await Users.findOne({ personalId: userId });
             if (user) {
                 user.onlineStatus = 0;
                 user.lastOnline = new Date();
@@ -140,11 +140,37 @@ const validatePassword = (password) => {
     return passRegex.test(password);
 }
 
+const searchContactsForUser = async (personalId, text) => {
+    try {
+        const users = await Users.find({
+            personalId: { $ne: personalId },
+            $or: [
+                { name: { $regex: new RegExp(text, 'i') } },
+                { personalId: { $regex: new RegExp(text, 'i') } }
+            ]
+        }, "_id name personalId profile");
+
+        const user = await Users.findOne({ personalId });
+        const friends = user ? user.friends.map(friend => friend.toString()) : [];
+
+        const usersWithFriendStatus = users.map(user => ({
+            ...user._doc,
+            alreadyFriend: (friends.includes(user._id.toString()) ? "check" : "plus")
+        }));
+
+        return usersWithFriendStatus;
+    } catch (error) {
+        console.error("Error in searchContactsForUser:", error);
+        throw new Error("Error in searchContactsForUser");
+    }
+};
+
 module.exports = {
     addUser,
     removeUser,
     getUser,
     getContactsOfUserByPersoanalId,
     markOnline,
-    markOffline
+    markOffline,
+    searchContactsForUser
 }

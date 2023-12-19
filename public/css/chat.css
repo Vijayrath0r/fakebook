@@ -15,11 +15,12 @@ body {
 }
 
 .contacts-heading {
-    width: 80% !important;
+    width: 68% !important;
     display: inline-block;
 }
 
-#refreshContacts {
+#refreshContacts,
+#addContacts {
     font-size: 15px;
     padding: 10px;
 }
@@ -145,7 +146,7 @@ body {
     border-bottom: 2px solid #fff;
     max-height: 720px;
     min-height: 700px;
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow-x: hidden;
 }
 
@@ -301,6 +302,37 @@ span.message-data-time {
 .waviy span.Jump {
     animation: waviy 1s infinite;
     animation-delay: calc(.1s * var(--i));
+}
+
+.searchContact {
+    margin: 15px 35px;
+    box-shadow: 0 20px 27px 0 rgb(0 0 0 / 5%);
+    border: 1px solid #80808057;
+    border-radius: 12px;
+    padding: 10px;
+}
+
+.searchContact .profile {
+    width: 60px;
+    border-radius: 50%;
+}
+
+.searchContact span {
+    font-weight: 500;
+    padding: 30px;
+}
+
+.searchContact i {
+    float: right;
+    margin: 20px;
+}
+
+.fa-user-plus:before {
+    color: #00a9ff;
+}
+
+.fa-user-check:before {
+    color: #3cb13c;
 }
 
 @keyframes waviy {
