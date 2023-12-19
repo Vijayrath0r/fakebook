@@ -49,6 +49,32 @@ const showMessages = (message) => {
     }
 }
 
+function showNotification(userName, message) {
+    if (!window.Notification) {
+        console.log('Browser does not support notifications.');
+    } else {
+        if (Notification.permission === 'granted') {
+            var notify = new Notification(userName, {
+                body: message,
+                icon: '/images/logo-min.jpg',
+            });
+        } else {
+            Notification.requestPermission().then(function (p) {
+                if (p === 'granted') {
+                    var notify = new Notification(userName, {
+                        body: message,
+                        icon: '/images/logo-min.jpg',
+                    });
+                } else {
+                    console.log('User blocked notifications.');
+                }
+            }).catch(function (err) {
+                console.error(err);
+            });
+        }
+    }
+}
+
 socket.on("message", (message) => {
     const tempMessage = {
         username: message.username,
@@ -178,4 +204,12 @@ socket.on("typingClient", ({ senderTyping, reciverTyping }) => {
         $("#" + senderTyping + " .waviy").css("visibility", "hidden");
         typingTimeout = null;
     }, 2000);
+})
+
+socket.on("showNotification", ({ senderNotifincation, reciverNotification, userName, message }) => {
+    if (sender == reciverNotification) {
+        if ($("#reciver").val() != senderNotifincation) {
+            showNotification(userName, message);
+        }
+    }
 })

@@ -16,7 +16,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3000;
 const publicDirectoryPath = path.join(__dirname, "../public");
 app.set('view engine', 'ejs');
 app.set('views', publicDirectoryPath);
@@ -93,6 +93,7 @@ io.on("connection", (socket) => {
                 io.to(from).emit("message", generateMessage(user[0].name, message, from));
             }
             saveMessage(user[0].name, message, from, to, 0);
+            io.emit("showNotification", { senderNotifincation: from, reciverNotification: to, userName: user[0].name, message })
             callback("OK!");
         }
     });
@@ -107,6 +108,7 @@ io.on("connection", (socket) => {
             io.to(coords.from).emit("LocationMessage", generateMessage(user[0].name, message, coords.from));
         }
         saveMessage(user[0].name, message, coords.from, coords.to, 1);
+        io.emit("showNotification", { senderNotifincation: coords.from, reciverNotification: coords.to, userName: user[0].name, message })
         callback("Location sent.");
     });
 
