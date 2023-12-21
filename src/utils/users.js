@@ -1,5 +1,6 @@
 require('../db/mongoose')
 const Users = require('../models/users')
+const { getUnreadMessageCount } = require("./conversation.js")
 const users = [];
 const onlineUsers = [];
 
@@ -116,7 +117,8 @@ const getContactsOfUserByPersoanalId = async (personalId) => {
             personalId: friend.personalId,
             profile: friend.profile,
             onlineStatus: (isUserOnline(friend.personalId) ? "online" : "offline"),
-            onlineTime: (isUserOnline(friend.personalId) ? "Online" : await getLastOnlineTime(friend.personalId))
+            onlineTime: (isUserOnline(friend.personalId) ? "Online" : await getLastOnlineTime(friend.personalId)),
+            unreadCount: await getUnreadMessageCount(friend.personalId, personalId)
         }));
 
         // Use Promise.all to wait for all the asynchronous getLastOnlineTime calls to complete

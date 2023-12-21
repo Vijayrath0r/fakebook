@@ -13,7 +13,12 @@ const conversationSchema = new mongoose.Schema({
         type: Number,
         required: true,
         default: 0 // 0 for personal chat and 1 for group chat.
-    }
+    },
+    lastReadMessage:
+    {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Message' // 'User' should match the model name
+    },
 }, {
     timestamps: true
 });

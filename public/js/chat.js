@@ -110,6 +110,11 @@ socket.on("LocationMessage", (message) => {
 
 socket.on("roomData", ({ users }) => {
     const html = Mustache.render(sideBarTemplate, { users }); $("#chat-sidebar").html(html);
+    $(".unreadcount").each(function () {
+        if ($(this).html() == '') {
+            $(this).hide();
+        }
+    });
 })
 
 $("#messageForm").on("submit", (e) => {
@@ -161,11 +166,13 @@ const changeReciver = (reciver) => {
         messages.forEach(message => {
             showMessages(message);
         });
-        // $('.chat-history').animate({ scrollTop: 9999 }, 'slow');
         // const template = $("#messages-template").html();
         // const html = Mustache.render(template, { messages });
         // $("#messages").html(html);
-        autoScroll();
+        if (messages.length > 0) {
+            $('.chat-history').animate({ scrollTop: 9999 }, 'slow');
+            autoScroll();
+        }
     })
     $("#reciver").val(reciver)
     $('.userList').removeClass('active');

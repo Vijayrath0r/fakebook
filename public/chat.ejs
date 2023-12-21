@@ -28,7 +28,7 @@
                             onclick=changeReciver('<%=user.personalId %>')>
                             <div>
                                 <img src="/images/<%= user.profile %>.svg" alt="avatar">
-                                <div class="about">
+                                <div class="about" style="width: 50%;">
                                     <div class="name">
                                         <%= user.name %>
                                     </div>
@@ -141,7 +141,7 @@
                 <li class="clearfix userList" id="{{personalId}}" onclick=changeReciver('{{personalId}}')>
                     <img src="/images/{{profile}}.svg" alt="avatar">
                     <div class="about">
-                        <div class="name">{{name}}</div>
+                        <div class="name">{{name}}</div><span class="unreadcount">{{unreadCount}}</span>
                         <div class="status"> <i class="fa fa-circle {{onlineStatus}}"></i> {{onlineTime}} </div>
                     </div>
                     <div class="waviy">
