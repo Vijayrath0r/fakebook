@@ -19,18 +19,18 @@ const { username, room } = Qs.parse(location.search, {
     ignoreQueryPrefix: true
 })
 const autoScroll = () => {
-    // const newMessage = $(".message:last-child")[0];
+    const newMessage = $("#messages li:last-child")[0];
     // const newMessageStyle = getComputedStyle(newMessage);
-    // const newMessageHeight = newMessage.offsetHeight;
+    const newMessageHeight = newMessage.offsetHeight;
 
-    // const visibleHeight = $(".chat-history")[0].offsetHeight;
-    // const containerHeight = $(".chat-history")[0].scrollHeight;
+    const visibleHeight = $("#messages")[0].offsetHeight;
+    const containerHeight = $("#messages")[0].scrollHeight;
 
-    // const scrollOffset = $(".chat-history")[0].scrollTop + visibleHeight;
+    const scrollOffset = $("#messages")[0].scrollTop + visibleHeight;
 
-    // $(".chat-history")[0].scrollTop = containerHeight;
-    // if (containerHeight - newMessageHeight <= scrollOffset) {
-    // }
+    if (containerHeight - newMessageHeight - 29 <= scrollOffset) {
+        $("#messages")[0].scrollTop = containerHeight;
+    }
 }
 const showMessages = (message) => {
     if (message.messageType) {
@@ -90,7 +90,8 @@ socket.on("message", (message) => {
         messageType: 0
     }
     showMessages(tempMessage)
-    $('.chat-history').animate({ scrollTop: 9999 }, 'slow');
+    // $('.chat-history').animate({ scrollTop: 9999 }, 'slow');
+    autoScroll();
 });
 
 socket.on("LocationMessage", (message) => {
@@ -103,7 +104,8 @@ socket.on("LocationMessage", (message) => {
         messageType: 1
     }
     showMessages(tempMessage)
-    $('.chat-history').animate({ scrollTop: 9999 }, 'slow');
+    // $('.chat-history').animate({ scrollTop: 9999 }, 'slow');
+    autoScroll();
 });
 
 socket.on("roomData", ({ users }) => {
@@ -159,10 +161,11 @@ const changeReciver = (reciver) => {
         messages.forEach(message => {
             showMessages(message);
         });
-        $('.chat-history').animate({ scrollTop: 9999 }, 'slow');
+        // $('.chat-history').animate({ scrollTop: 9999 }, 'slow');
         // const template = $("#messages-template").html();
         // const html = Mustache.render(template, { messages });
         // $("#messages").html(html);
+        autoScroll();
     })
     $("#reciver").val(reciver)
     $('.userList').removeClass('active');
