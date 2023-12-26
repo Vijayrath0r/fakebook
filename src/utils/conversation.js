@@ -40,21 +40,20 @@ const createNewConversation = async (from, to) => {
     return result;
 }
 
-const getUnreadMessageCount = async (from, to) => {
-    const conversations = await Conversation.findOne({
-        userIds: {
-            $all: [from, to]
-        }
-    }).populate('lastReadMessage');
+const getUnreadMessageCount = async (from, to, lastReadMessage) => {
+    if (!lastReadMessage || lastReadMessage == '') {
+        return '';
+    }
+    const conversations = await Message.findById(lastReadMessage);
 
-    if (conversations.lastReadMessage) {
+    if (conversations) {
         const messages = await Message.find({
             from: from,
             createdAt: {
-                $gt: conversations.lastReadMessage.createdAt
+                $gt: conversations.createdAt
             }
         });
-        if(messages.length>0){
+        if (messages.length > 0) {
             return messages.length;
         } else {
             return '';

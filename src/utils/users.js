@@ -106,19 +106,43 @@ const getLastOnlineTime = async (personalId) => {
 const getContactsOfUserByPersoanalId = async (personalId) => {
     try {
         // Find the user by the provided id and populate the 'friends' field
-        const user = await Users.findOne({ personalId }).populate('friends', 'name personalId profile');
+        const user = await Users.aggregate([
+            { $match: { personalId } },
+            {
+                $unwind: '$friends', // Unwind the friends array
+            },
+            {
+                $lookup: {
+                    from: 'users', // Assuming the name of your User model is 'users'
+                    localField: 'friends.personalId',
+                    foreignField: '_id',
+                    as: 'friendsDetails',
+                },
+            },
+            {
+                $unwind: '$friendsDetails',
+            },
+            {
+                $project: {
+                    'friendsDetails.name': 1,
+                    'friendsDetails.personalId': 1,
+                    'friendsDetails.profile': 1,
+                    'lastReadMessage': '$friends.lastReadMessage', // Include the lastReadMessage from friends
+                },
+            },
+        ])
 
         if (!user) {
             throw new Error('User not found');
         }
 
-        const contacts = user.friends.map(async friend => ({
-            name: friend.name,
-            personalId: friend.personalId,
-            profile: friend.profile,
-            onlineStatus: (isUserOnline(friend.personalId) ? "online" : "offline"),
-            onlineTime: (isUserOnline(friend.personalId) ? "Online" : await getLastOnlineTime(friend.personalId)),
-            unreadCount: await getUnreadMessageCount(friend.personalId, personalId)
+        const contacts = user.map(async friend => ({
+            name: friend.friendsDetails.name,
+            personalId: friend.friendsDetails.personalId,
+            profile: friend.friendsDetails.profile,
+            onlineStatus: (isUserOnline(friend.friendsDetails.personalId) ? "online" : "offline"),
+            onlineTime: (isUserOnline(friend.friendsDetails.personalId) ? "Online" : await getLastOnlineTime(friend.friendsDetails.personalId)),
+            unreadCount: await getUnreadMessageCount(friend.friendsDetails.personalId, personalId,friend.lastReadMessage)
         }));
 
         // Use Promise.all to wait for all the asynchronous getLastOnlineTime calls to complete
@@ -154,10 +178,11 @@ const searchContactsForUser = async (personalId, text) => {
 
         const user = await Users.findOne({ personalId });
         const friends = user ? user.friends.map(friend => friend.toString()) : [];
+        const friendsString = friends.toString();
 
         const usersWithFriendStatus = users.map(user => ({
             ...user._doc,
-            alreadyFriend: (friends.includes(user._id.toString()) ? "check" : "plus")
+            alreadyFriend: (friendsString.includes(user._id.toString()) ? "check" : "plus")
         }));
 
         return usersWithFriendStatus;

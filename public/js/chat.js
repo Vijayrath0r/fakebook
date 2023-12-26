@@ -242,7 +242,6 @@ $("#addContacts").on("click", () => {
 $(document.body).on('click', '#searchContactbtn', function () {
     let searchText = $('#searchContactInput').val();
     socket.emit("findContacts", { sender, searchText }, (userList) => {
-        console.log(userList);
         const html = Mustache.render(addContactListTemplate, { userList })
         $("#searchResult").html(html)
     })

@@ -34,9 +34,15 @@ const userSchema = new mongoose.Schema({
     },
     friends: [
         {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User' // 'User' should match the model name
-        }
+            personalId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'User',
+            },
+            lastReadMessage: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Message',
+            },
+        },
     ],
     lastOnline: {
         type: Date,
