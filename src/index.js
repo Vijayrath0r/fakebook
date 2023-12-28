@@ -156,7 +156,7 @@ io.on("connection", (socket) => {
             temp.dateClass = (sender == message.from ? "text-right" : "text-left")
             messages.push(temp)
         });
-        // markReadMessage(sender, reciver);
+        markReadMessage(sender, reciver);
         callback({ messages, lastReadMessageId })
     })
     socket.on("updateUserList", async ({ sender }, callback) => {

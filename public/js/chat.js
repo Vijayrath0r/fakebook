@@ -94,6 +94,7 @@ socket.on("message", (message) => {
     }
     showMessages(tempMessage)
     // $('.chat-history').animate({ scrollTop: 9999 }, 'slow');
+    $("#refreshContacts").click();
     autoScroll();
 });
 
@@ -109,6 +110,7 @@ socket.on("LocationMessage", (message) => {
     }
     showMessages(tempMessage)
     // $('.chat-history').animate({ scrollTop: 9999 }, 'slow');
+    $("#refreshContacts").click();
     autoScroll();
 });
 
@@ -184,6 +186,7 @@ const changeReciver = (reciver) => {
     $("#reciver").val(reciver)
     $('.userList').removeClass('active');
     $("#" + reciver).addClass("active");
+    $("#refreshContacts").click();
     // autoScroll();
 }
 

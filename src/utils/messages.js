@@ -53,7 +53,6 @@ const getLastReadMessage = async (to, from) => {
         { $project: { _id: 0, lastReadMessage: "$friends.lastReadMessage" } },
     ])
     if (messageData && messageData.length > 0) {
-        console.log(messageData);
         return messageData[0].lastReadMessage;
     } else {
         return;
