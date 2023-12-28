@@ -12,6 +12,7 @@ const sideBarTemplate = $("#sidebar-template").html();
 const messagesContainer = $("#messages")[0];
 const addContactTemplate = $("#addContact-template").html();
 const addContactListTemplate = $("#addContactList-template").html();
+const unReadLineTemplate = $("#unReadLine-template").html();
 
 
 
@@ -35,6 +36,7 @@ const autoScroll = () => {
 const showMessages = (message) => {
     if (message.messageType) {
         const html = Mustache.render(Locationtemplate, {
+            messageId: message.messageId,
             username: message.name,
             message: message.message,
             createdAt: message.createdAt,
@@ -44,6 +46,7 @@ const showMessages = (message) => {
         messagesContainer.insertAdjacentHTML('beforeend', html);
     } else {
         const html = Mustache.render(textTemplate, {
+            messageId: message.messageId,
             username: message.name,
             message: message.message,
             createdAt: message.createdAt,
@@ -56,7 +59,7 @@ const showMessages = (message) => {
 
 function showNotification(userName, message) {
     if (!window.Notification) {
-        console.log('Browser does not support notifications.');
+        // 'Browser does not support notifications.';
     } else {
         if (Notification.permission === 'granted') {
             var notify = new Notification(userName, {
@@ -71,10 +74,9 @@ function showNotification(userName, message) {
                         icon: '/images/logo-min.jpg',
                     });
                 } else {
-                    console.log('User blocked notifications.');
+                    // 'User blocked notifications.'
                 }
             }).catch(function (err) {
-                console.error(err);
             });
         }
     }
@@ -82,10 +84,11 @@ function showNotification(userName, message) {
 
 socket.on("message", (message) => {
     const tempMessage = {
+        messageId: message.messageId,
         username: message.username,
         message: message.text,
         createdAt: moment(message.createdAt).format("h:mm a"),
-        senderClass: sender == message.from ? "other-message float-right" : "my-message",
+        senderClass: sender == message.from ? "my-message float-right" : "other-message",
         dateClass: sender == message.from ? "text-right" : "text-left",
         messageType: 0
     }
@@ -96,10 +99,11 @@ socket.on("message", (message) => {
 
 socket.on("LocationMessage", (message) => {
     const tempMessage = {
+        messageId: message.messageId,
         username: message.username,
         message: message.text,
         createdAt: moment(message.createdAt).format("h:mm a"),
-        senderClass: sender == message.from ? "other-message float-right" : "my-message",
+        senderClass: sender == message.from ? "my-message float-right" : "other-message",
         dateClass: sender == message.from ? "text-right" : "text-left",
         messageType: 1
     }
@@ -161,14 +165,17 @@ const changeReciver = (reciver) => {
     })
     $(".ms-headerBtn").show();
     $(".chat-message").show();
-    socket.emit("getconversation", { sender, reciver, sender }, (messages) => {
+    socket.emit("getconversation", { sender, reciver, sender }, ({ messages, lastReadMessageId }) => {
         $("#messages").html('');
         messages.forEach(message => {
             showMessages(message);
         });
-        // const template = $("#messages-template").html();
-        // const html = Mustache.render(template, { messages });
-        // $("#messages").html(html);
+        if (lastReadMessageId) {
+            eletemntArray = $("#" + lastReadMessageId).nextAll(".clearfix.text-left");
+            if (eletemntArray && eletemntArray.length > 0) {
+                eletemntArray[0].insertAdjacentHTML('beforebegin', unReadLineTemplate);
+            }
+        }
         if (messages.length > 0) {
             $('.chat-history').animate({ scrollTop: 9999 }, 'slow');
             autoScroll();

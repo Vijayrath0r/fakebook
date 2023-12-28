@@ -110,7 +110,7 @@
         </div>
     </script>
     <script id="message-template" type="text/html">
-        <li class="clearfix">
+        <li class="clearfix {{dateClass}}" id="{{messageId}}">
             <div class="message-data {{dateClass}}">
                 <span class="message-data-time">{{createdAt}}</span>
             </div>
@@ -119,7 +119,7 @@
     </script>
     <script id="messages-template" type="text/html">
         {{#messages}}
-        <li class="clearfix">
+        <li class="clearfix" id="{{messageId}}">
             <div class="message-data {{dateClass}}">
                 <span class="message-data-time">{{name}} -{{createdAt}}</span>
             </div>
@@ -128,7 +128,7 @@
         {{/messages}}
     </script>
     <script id="Locationmessage-template" type="text/html">
-        <li class="clearfix">
+        <li class="clearfix {{dateClass}}" id="{{messageId}}">
             <div class="message-data {{dateClass}}">
                 <span class="message-data-time">{{createdAt}}</span>
             </div>
@@ -171,6 +171,11 @@
                 <i class="fas fa-user-{{alreadyFriend}}"></i>
             </div>
         {{/userList}}
+    </script>
+    <script id="unReadLine-template" type="text/html">
+        <div class="clearfix unreadDiv">
+            <span class="unReadSpan">Unread Messages</span>
+        </div>
     </script>
     <script src="https://kit.fontawesome.com/d1754f4c6d.js" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"

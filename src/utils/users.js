@@ -49,7 +49,6 @@ const markOnline = async (personalId, socketId) => {
         }
         return user;
     } catch (error) {
-        console.error(error);
         return null;
     }
 }
@@ -98,22 +97,20 @@ const getLastOnlineTime = async (personalId) => {
             return `left ${hours} hours ago`;
         }
     } catch (error) {
-        console.error('Error getting last online time:', error.message);
         throw error;
     }
 }
 
 const getContactsOfUserByPersoanalId = async (personalId) => {
     try {
-        // Find the user by the provided id and populate the 'friends' field
         const user = await Users.aggregate([
             { $match: { personalId } },
             {
-                $unwind: '$friends', // Unwind the friends array
+                $unwind: '$friends',
             },
             {
                 $lookup: {
-                    from: 'users', // Assuming the name of your User model is 'users'
+                    from: 'users',
                     localField: 'friends.personalId',
                     foreignField: '_id',
                     as: 'friendsDetails',
@@ -142,16 +139,13 @@ const getContactsOfUserByPersoanalId = async (personalId) => {
             profile: friend.friendsDetails.profile,
             onlineStatus: (isUserOnline(friend.friendsDetails.personalId) ? "online" : "offline"),
             onlineTime: (isUserOnline(friend.friendsDetails.personalId) ? "Online" : await getLastOnlineTime(friend.friendsDetails.personalId)),
-            unreadCount: await getUnreadMessageCount(friend.friendsDetails.personalId, personalId,friend.lastReadMessage)
+            unreadCount: await getUnreadMessageCount(friend.friendsDetails.personalId, personalId, friend.lastReadMessage)
         }));
 
-        // Use Promise.all to wait for all the asynchronous getLastOnlineTime calls to complete
         const resolvedContacts = await Promise.all(contacts);
 
         return resolvedContacts;
     } catch (error) {
-        // Handle errors, e.g., user not found or database error
-        console.error('Error fetching contacts:', error.message);
         throw error;
     }
 }
@@ -187,7 +181,6 @@ const searchContactsForUser = async (personalId, text) => {
 
         return usersWithFriendStatus;
     } catch (error) {
-        console.error("Error in searchContactsForUser:", error);
         throw new Error("Error in searchContactsForUser");
     }
 };

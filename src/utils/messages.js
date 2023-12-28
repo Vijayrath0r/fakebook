@@ -1,5 +1,6 @@
 require('../db/mongoose')
 const Message = require('../models/message')
+const Users = require('../models/users')
 
 // const message = new Message({
 //     name: "vijay rathor",
@@ -18,15 +19,16 @@ const getConversation = async (from, to) => {
     });
     return tempmessage;
 }
-const generateMessage = (username, text, from) => {
+const generateMessage = (username, text, from, messageId) => {
     return {
         username,
         text,
         createdAt: new Date().getTime(),
-        from
+        from,
+        messageId
     }
 }
-const saveMessage = (name, message, from, to, messageType) => {
+const saveMessage = async (name, message, from, to, messageType) => {
     const messageobj = new Message({
         name,
         message,
@@ -34,10 +36,62 @@ const saveMessage = (name, message, from, to, messageType) => {
         to,
         messageType
     });
-    messageobj.save()
+    const messageData = await messageobj.save();
+    return messageData._id;
 }
+
+const getLastReadMessage = async (to, from) => {
+    const fromUser = await Users.findOne({ personalId: from }, "_id");
+
+    if (!fromUser) return;
+    const messageData = await Users.aggregate([
+        { $match: { personalId: to } },
+        {
+            $unwind: '$friends',
+        },
+        { $match: { "friends.personalId": fromUser._id } },
+        { $project: { _id: 0, lastReadMessage: "$friends.lastReadMessage" } },
+    ])
+    if (messageData && messageData.length > 0) {
+        console.log(messageData);
+        return messageData[0].lastReadMessage;
+    } else {
+        return;
+    }
+}
+// getLastReadMessage("vijay12345678", "suraj12345678")
+
+const markReadMessage = async (to, from) => {
+    try {
+        const message = await Message.findOne({ from, to }, '_id')
+            .sort({ createdAt: -1 })
+            .limit(1);
+        if (message) {
+            const messageId = message._id;
+
+            const fromUser = await Users.findOne({ personalId: from });
+
+            if (!fromUser) {
+                throw new Error(`User with personalId ${from} not found`);
+            }
+
+            const toUser = await Users.findOneAndUpdate(
+                { personalId: to, 'friends.personalId': fromUser._id },
+                { $set: { 'friends.$.lastReadMessage': messageId } },
+                { new: true }
+            );
+        } else {
+            return;
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
 module.exports = {
     generateMessage,
     saveMessage,
-    getConversation
+    getConversation,
+    markReadMessage,
+    getLastReadMessage
 }

@@ -1,4 +1,5 @@
 require('../db/mongoose')
+const mongoose = require("mongoose");
 const Conversation = require('../models/conversation')
 const Message = require('../models/message')
 
@@ -44,20 +45,41 @@ const getUnreadMessageCount = async (from, to, lastReadMessage) => {
     if (!lastReadMessage || lastReadMessage == '') {
         return '';
     }
-    const conversations = await Message.findById(lastReadMessage);
 
-    if (conversations) {
-        const messages = await Message.find({
-            from: from,
-            createdAt: {
-                $gt: conversations.createdAt
+    const result = await Message.aggregate([
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(lastReadMessage)
             }
-        });
-        if (messages.length > 0) {
-            return messages.length;
-        } else {
-            return '';
+        },
+        {
+            $lookup: {
+                from: 'messages', // Replace with your actual collection name
+                let: { createdAt: '$createdAt' },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    { $eq: ['$from', from] },
+                                    { $gt: ['$createdAt', '$$createdAt'] }
+                                ]
+                            }
+                        }
+                    }
+                ],
+                as: 'unreadMessages'
+            }
+        },
+        {
+            $project: {
+                unreadMessageCount: { $size: '$unreadMessages' }
+            }
         }
+    ]);
+
+    if (result.length > 0) {
+        return result[0].unreadMessageCount > 0 ? result[0].unreadMessageCount : '';
     } else {
         return '';
     }

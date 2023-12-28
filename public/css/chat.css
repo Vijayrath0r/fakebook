@@ -224,11 +224,11 @@ span.message-data-time {
     margin-left: -10px
 }
 
-.chat .chat-history .my-message {
+.chat .chat-history .other-message {
     background: #efefef
 }
 
-.chat .chat-history .my-message:after {
+.chat .chat-history .other-message:after {
     bottom: 100%;
     left: -9px;
     border: solid transparent;
@@ -244,12 +244,12 @@ span.message-data-time {
     margin-left: -10px;
 }
 
-.chat .chat-history .other-message {
+.chat .chat-history .my-message {
     background: #e8f1f3;
     text-align: right
 }
 
-.chat .chat-history .other-message:after {
+.chat .chat-history .my-message:after {
     transform: rotate(90deg);
     border-bottom-color: #e8f1f3;
     right: -20px;
@@ -259,6 +259,21 @@ span.message-data-time {
 
 .chat .chat-message {
     padding: 20px
+}
+
+.chat .unreadDiv {
+    text-align: center;
+    background-color: #9999991c;
+    display: flex;
+    justify-content: center;
+}
+
+.chat .unReadSpan {
+    padding: 5px 16px;
+    background-color: #808080c4;
+    border-radius: 25px;
+    color: white;
+    font-size: 15px;
 }
 
 .online,

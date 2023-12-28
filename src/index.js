@@ -3,7 +3,7 @@ const http = require("http");
 const express = require("express");
 const moment = require("moment");
 const socketio = require("socket.io");
-const { generateMessage, saveMessage, getConversation } = require("./utils/messages.js")
+const { generateMessage, saveMessage, getConversation, markReadMessage, getLastReadMessage } = require("./utils/messages.js")
 const { addUser, removeUser, getUser, getContactsOfUserByPersoanalId, markOnline, markOffline, searchContactsForUser } = require("./utils/users.js")
 const { getConversationId, createNewConversation } = require("./utils/conversation.js")
 require('./db/mongoose')
@@ -88,11 +88,11 @@ io.on("connection", (socket) => {
         if (message != '') {
             let conversationData = await getConversationId(to, from);
             let conversationId = conversationData[0].conversationId;
-            socket.broadcast.to(conversationId).emit("message", generateMessage(user[0].name, message, from));
+            const messageId = await saveMessage(user[0].name, message, from, to, 0);
+            socket.broadcast.to(conversationId).emit("message", generateMessage(user[0].name, message, from, messageId));
             if (from != to) {
-                io.to(from).emit("message", generateMessage(user[0].name, message, from));
+                io.to(from).emit("message", generateMessage(user[0].name, message, from, messageId));
             }
-            saveMessage(user[0].name, message, from, to, 0);
             io.emit("showNotification", { senderNotifincation: from, reciverNotification: to, userName: user[0].name, message })
             callback("OK!");
         }
@@ -103,11 +103,11 @@ io.on("connection", (socket) => {
         const message = `https://www.google.com/maps?q=${coords.latitude},${coords.longitude}`;
         let conversationData = await getConversationId(coords.to, coords.from);
         let conversationId = conversationData[0].conversationId;
-        socket.broadcast.to(conversationId).emit("LocationMessage", generateMessage(user[0].name, message, coords.from));
+        const messageId = await saveMessage(user[0].name, message, coords.from, coords.to, 1);
+        socket.broadcast.to(conversationId).emit("LocationMessage", generateMessage(user[0].name, message, coords.from, messageId));
         if (coords.from != coords.to) {
-            io.to(coords.from).emit("LocationMessage", generateMessage(user[0].name, message, coords.from));
+            io.to(coords.from).emit("LocationMessage", generateMessage(user[0].name, message, coords.from, messageId));
         }
-        saveMessage(user[0].name, message, coords.from, coords.to, 1);
         io.emit("showNotification", { senderNotifincation: coords.from, reciverNotification: coords.to, userName: user[0].name, message })
         callback("Location sent.");
     });
@@ -141,20 +141,23 @@ io.on("connection", (socket) => {
 
     socket.on("getconversation", async ({ sender, reciver, logedUser }, callback) => {
         const messagesArray = await getConversation(sender, reciver);
+        const lastReadMessageId = await getLastReadMessage(sender, reciver);
         const messages = [];
         messagesArray.forEach(message => {
             const temp = {};
+            temp.messageId = message._id
             temp.name = message.name
             temp.from = message.from
             temp.to = message.to
             temp.messageType = message.messageType
             temp.message = message.message
             temp.createdAt = moment(message.createdAt).format("h:mm a")
-            temp.senderClass = (sender == message.from ? "other-message float-right" : "my-message")
+            temp.senderClass = (sender == message.from ? "my-message float-right" : "other-message")
             temp.dateClass = (sender == message.from ? "text-right" : "text-left")
             messages.push(temp)
         });
-        callback(messages)
+        // markReadMessage(sender, reciver);
+        callback({ messages, lastReadMessageId })
     })
     socket.on("updateUserList", async ({ sender }, callback) => {
         udpateUserList(sender);
