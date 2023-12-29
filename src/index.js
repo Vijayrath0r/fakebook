@@ -10,7 +10,6 @@ require('./db/mongoose')
 const Users = require('./models/users')
 const session = require('express-session');
 const flash = require('express-flash');
-const { send } = require("process");
 
 const app = express();
 const server = http.createServer(app);
@@ -27,13 +26,26 @@ app.use(express.urlencoded({ extended: true }));
 
 
 app.get('/', async (req, res) => {
-    const error = req.flash('error')[0] || null; // Get the flash message
-    res.render('index', { error });
+    if (req.session.user && req.session.user._id) {
+        res.render('chat', { user: req.session.user });
+    } else {
+        const error = req.flash('error')[0] || null; // Get the flash message
+        res.render('index', { error });
+    }
 })
 
 app.get('/login', async (req, res) => {
-    const error = req.flash('error')[0] || null; // Get the flash message
-    res.render('new', { error });
+    if (req.session.user && req.session.user._id) {
+        res.render('chat', { user: req.session.user });
+    } else {
+        res.redirect('/');
+    }
+})
+
+app.get('/logout', async (req, res) => {
+    req.session.user = {};
+    req.session.save();
+    res.redirect('/');
 })
 
 app.get('/createUser', async (req, res) => {
@@ -59,9 +71,13 @@ app.post('/createUser', async (req, res) => {
 app.post('/login', async (req, res) => {
     try {
         const user = await Users.findByCredentials(req.body.email, req.body.password)
+        req.session.user = user;
+        req.session.save();
         res.render('chat', { user });
     } catch (e) {
         // Set a flash message
+        req.session.user = {};
+        req.session.save();
         req.flash('error', 'Invalid credentials');
         res.redirect('/');
     }

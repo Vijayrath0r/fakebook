@@ -62,6 +62,7 @@ const getUnreadMessageCount = async (from, to, lastReadMessage) => {
                             $expr: {
                                 $and: [
                                     { $eq: ['$from', from] },
+                                    { $eq: ['$to', to] },
                                     { $gt: ['$createdAt', '$$createdAt'] }
                                 ]
                             }

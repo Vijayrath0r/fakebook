@@ -256,3 +256,18 @@ $(document.body).on('click', '#searchContactbtn', function () {
         $("#searchResult").html(html)
     })
 })
+$("#logoutButton").on("click", () => {
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You want to logout.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, Logout"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.replace("/logout");
+        }
+    });
+})
