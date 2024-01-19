@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /home/ubuntu/fakebook
+    destination: /home/ec2-user/fakebook
 hooks:
   # BeforeInstall:
   #   - location: beforeinstall.sh

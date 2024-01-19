@@ -1,4 +1,4 @@
 #!/bin/bash
 
-cd /home/ubuntu/fakebook
+cd /home/ec2-user/fakebook
 npm -f install
