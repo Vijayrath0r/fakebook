@@ -2,4 +2,4 @@
 
 cd /home/ec2-user/fakebook
 pm2 kill
-pm2 start src/index.js
+pm2 start src/index.js --env ../dev.env
