@@ -33,6 +33,9 @@ app.get('/', async (req, res) => {
         res.render('index', { error });
     }
 })
+app.get('/test', async (req, res) => {
+    res.send("URL - "+process.env.MONGODB_URL);
+});
 
 app.get('/login', async (req, res) => {
     if (req.session.user && req.session.user._id) {
