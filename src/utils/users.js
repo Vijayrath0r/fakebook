@@ -1,5 +1,6 @@
 require('../db/mongoose')
 const Users = require('../models/users')
+const FriendRequest = require('../models/friendRequest')
 const { getUnreadMessageCount } = require("./conversation.js")
 const users = [];
 const onlineUsers = [];
@@ -92,9 +93,16 @@ const getLastOnlineTime = async (personalId) => {
         } else if (timeDifference < 3600) {
             let minutes = Math.floor(timeDifference / 60);
             return `left ${minutes} minutes ago`;
-        } else {
+        } else if (timeDifference < 86400) {
             let hours = Math.floor(timeDifference / 3600);
             return `left ${hours} hours ago`;
+        } else {
+            let days = Math.floor(timeDifference / 86400);
+            if (days < 7) {
+                return `left ${days} days ago`;
+            } else {
+                return `left 7 days ago`
+            }
         }
     } catch (error) {
         throw error;
@@ -172,11 +180,17 @@ const searchContactsForUser = async (personalId, text) => {
 
         const user = await Users.findOne({ personalId });
         const friends = user ? user.friends.map(friend => friend.toString()) : [];
+        const friendRequestsSent = await FriendRequest.find({
+            from: user._id,
+            status: { $in: ['1', '3'] }
+        });
+
         const friendsString = friends.toString();
+        const friendRequestsSentTo = friendRequestsSent.map(request => request.to.toString());
 
         const usersWithFriendStatus = users.map(user => ({
             ...user._doc,
-            alreadyFriend: (friendsString.includes(user._id.toString()) ? "check" : "plus")
+            alreadyFriend: (friendsString.includes(user._id.toString()) ? "check" : (friendRequestsSentTo.includes(user._id.toString()) ? "times" : "plus"))
         }));
 
         return usersWithFriendStatus;

@@ -335,7 +335,19 @@ span.message-data-time {
     animation: waviy 1s infinite;
     animation-delay: calc(.1s * var(--i));
 }
-
+.searchBox{
+    display: flex;
+    justify-content: space-evenly;
+}
+#friendsRequestRecived:before {
+    content: attr(data-requestCount);
+    color: #475dd3;
+    font-size: 15px;
+    position: absolute;
+    bottom: 18px;
+    left: 50px;
+    display: inline-block;
+}
 .searchContact {
     margin: 15px 35px;
     box-shadow: 0 20px 27px 0 rgb(0 0 0 / 5%);

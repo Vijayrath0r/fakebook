@@ -160,11 +160,16 @@
             {{/users}}
     </script>
     <script id="addContact-template" type="text/html">
-        <div class="col-8">
-            <input type="text" class="form-control" name="searchContact" id="searchContactInput" placeholder="Enter conversationId or Name.">
-        </div>
-        <div class="input-group-prepend col-3">
-            <button class="input-group-text" id="searchContactbtn"><i class="fa fa-search"></i></button>
+        <div class="searchBox">
+            <div class="col-8">
+                <input type="text" class="form-control" name="searchContact" id="searchContactInput" placeholder="Enter conversationId or Name.">
+            </div>
+            <div class="input-group-prepend col-2">
+                <button class="input-group-text" id="searchContactbtn"><i class="fa fa-search"></i></button>
+            </div>
+            <div class="input-group-prepend col-2" style="position: relative;">
+                <button class="input-group-text" id="friendsRequestRecived" data-requestCount = "11"><i class="fa fa-users"></i></button>
+            </div>
         </div>
         <div id="searchResult" style="height: 300px;">
         </div>
