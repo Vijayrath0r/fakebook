@@ -22,6 +22,7 @@
                             <input type="hidden" id="email" value="<%= user.email %>">
                             <input type="hidden" id="logedName" value="<%= user.name %>">
                             <input type="hidden" id="sender" value="<%= user.personalId %>">
+                            <input type="hidden" id="senderId" value="<%= user._id %>">
                             <input type="hidden" id="reciver" value="<%= user.personalId %>">
                             <span>FakeBook</span>
                         </div>
@@ -173,7 +174,7 @@
             <div class="searchContact">
                 <img class="profile" src="/images/{{profile}}.svg" alt="avatar">
                 <span>{{name}}</span>
-                <i class="fas fa-user-{{alreadyFriend}}"></i>
+                <i class="fas fa-user-{{alreadyFriend}}" data-personalId="{{_id}}"></i>
             </div>
         {{/userList}}
     </script>

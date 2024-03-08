@@ -366,6 +366,9 @@ span.message-data-time {
 .fa-user-check:before {
     color: #3cb13c;
 }
+.fa-user-times:before {
+    color: #d97575;
+}
 
 @keyframes waviy {
 

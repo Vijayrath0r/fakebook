@@ -6,6 +6,7 @@ const socketio = require("socket.io");
 const { generateMessage, saveMessage, getConversation, markReadMessage, getLastReadMessage } = require("./utils/messages.js")
 const { addUser, removeUser, getUser, getContactsOfUserByPersoanalId, markOnline, markOffline, searchContactsForUser } = require("./utils/users.js")
 const { getConversationId, createNewConversation } = require("./utils/conversation.js")
+const { sendFriendRequest } = require("./utils/friendRequest.js")
 require('./db/mongoose')
 const Users = require('./models/users')
 const session = require('express-session');
@@ -187,6 +188,11 @@ io.on("connection", (socket) => {
     socket.on('findContacts', async ({ sender, searchText }, callback) => {
         const contactList = await searchContactsForUser(sender, searchText);
         callback(contactList);
+    })
+
+    socket.on('addFriendRequest', async ({ senderId, reciver }, callback) => {
+        let response =  await sendFriendRequest(senderId,reciver);
+        callback(response);
     })
 });
 

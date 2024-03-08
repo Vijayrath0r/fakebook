@@ -271,3 +271,16 @@ $("#logoutButton").on("click", () => {
         }
     });
 })
+
+$(".chat-history").on("click", '.fa-user-plus', function () {
+    let reciver = $(this).data("personalid");
+    $(this).removeClass("fa-user-plus");
+    $(this).addClass("fa-spinner fa-pulse");
+    let senderId = $("#senderId").val();
+    socket.emit("addFriendRequest", { senderId, reciver }, (msg) => {
+        setTimeout(() => {
+            $(this).removeClass("fa-spinner fa-pulse");
+            $(this).addClass("fa-user-times");
+        }, 500);
+    })
+})
