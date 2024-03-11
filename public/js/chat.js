@@ -12,6 +12,7 @@ const sideBarTemplate = $("#sidebar-template").html();
 const messagesContainer = $("#messages")[0];
 const addContactTemplate = $("#addContact-template").html();
 const addContactListTemplate = $("#addContactList-template").html();
+const friendRequestListTemplate = $("#friendRequestList-template").html();
 const unReadLineTemplate = $("#unReadLine-template").html();
 
 
@@ -245,6 +246,11 @@ $("#addContacts").on("click", () => {
     $("#profileDetails").html("<h2>add contact</h2>")
     $(".ms-headerBtn").hide();
     $(".chat-message").hide();
+    let senderId = $("#senderId").val();
+    socket.emit("getRequestCount", { sendTo: senderId }, (count) => {
+        $('#friendsRequestRecived').attr('data-requestcount', count);
+        console.log('count - ',count);
+    })
     const html = Mustache.render(addContactTemplate, { name: "vijay" })
     $("#messages").html(html)
 })
@@ -283,4 +289,13 @@ $(".chat-history").on("click", '.fa-user-plus', function () {
             $(this).addClass("fa-user-times");
         }, 500);
     })
+})
+$(".chat-history").on("click", '#friendsRequestRecived', function () {
+    let senderId = $("#senderId").val();
+    socket.emit("getRequestList", { sendTo: senderId }, (count) => {
+        console.log(count);
+        const html = Mustache.render(friendRequestListTemplate)
+        $("#searchResult").html(html)
+    })
+    console.log('Friend request button clicked');
 })

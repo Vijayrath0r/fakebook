@@ -21,6 +21,29 @@ const sendFriendRequest = async (senderId, receiverId) => {
         throw error;
     }
 }
+async function getRecivedRequestCount(userId) {
+    try {
+        const count = await FriendRequest.countDocuments({ to: userId, status: '1' });
+        return count;
+    } catch (error) {
+        console.error("Error counting received accepted requests:", error);
+        throw error; // Propagate the error for handling at a higher level
+    }
+}
+async function getRecivedRequests(userId) {
+    try {
+        const requests = await FriendRequest.find({ to: userId }).populate({
+            path: 'from',
+            select: 'id name profile'
+        });
+        return requests;
+    } catch (error) {
+        console.error("Error getting received friend requests:", error);
+        throw error; // Propagate the error for handling at a higher level
+    }
+}
 module.exports = {
-    sendFriendRequest
+    sendFriendRequest,
+    getRecivedRequestCount,
+    getRecivedRequests
 }
