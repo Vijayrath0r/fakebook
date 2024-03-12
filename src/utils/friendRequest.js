@@ -61,6 +61,7 @@ async function updateRequestStatus(from, to, status) {
         await friendRequest.save();
         if (status == '2') {
             await addFriendToUser(to, from);
+            await addFriendToUser(from, to);
         }
         return friendRequest;
     } catch (error) {
