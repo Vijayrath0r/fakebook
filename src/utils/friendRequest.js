@@ -1,5 +1,6 @@
 require('../db/mongoose')
 const FriendRequest = require('../models/friendRequest')
+const { addFriendToUser } = require('./users');
 
 const sendFriendRequest = async (senderId, receiverId) => {
     try {
@@ -58,7 +59,9 @@ async function updateRequestStatus(from, to, status) {
         // Update the status
         friendRequest.status = status;
         await friendRequest.save();
-
+        if (status == '2') {
+            await addFriendToUser(to, from);
+        }
         return friendRequest;
     } catch (error) {
         throw error; // Propagate the error for handling at a higher level

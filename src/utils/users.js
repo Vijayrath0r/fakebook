@@ -198,6 +198,27 @@ const searchContactsForUser = async (personalId, text) => {
         throw new Error("Error in searchContactsForUser");
     }
 };
+async function addFriendToUser(userId, friendId) {
+    try {
+        // Update the user's friends array to add the new friend
+        const user = await Users.findByIdAndUpdate(userId, {
+            $addToSet: {
+                friends: {
+                    personalId: friendId
+                }
+            }
+        }, { new: true });
+
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        return user;
+    } catch (error) {
+        console.error("Error adding friend to user:", error);
+        throw error; // Propagate the error for handling at a higher level
+    }
+}
 
 module.exports = {
     addUser,
@@ -206,5 +227,6 @@ module.exports = {
     getContactsOfUserByPersoanalId,
     markOnline,
     markOffline,
-    searchContactsForUser
+    searchContactsForUser,
+    addFriendToUser
 }
