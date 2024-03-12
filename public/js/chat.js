@@ -4,6 +4,7 @@ let typingTimeout;
 var doneTypingInterval = 500;
 const logedusersEmail = $("#email").val();
 const sender = $("#sender").val();
+const senderId = $("#senderId").val();
 const logedName = $("#logedName").val();
 const reciver = $("#reciver").val();
 const textTemplate = $("#message-template").html();
@@ -81,6 +82,16 @@ function showNotification(userName, message) {
             });
         }
     }
+}
+async function updateRequestStatus(from, to, status, elementObj) {
+    socket.emit("updateRequestStatus", { from, to, status }, (res) => {
+        if (status == '2') {
+            $(elementObj).closest('.searchContact').html(`<div class="alert alert-primary" role="alert">Request Accepted</div>`);
+        } else if (status == '3') {
+            $(elementObj).closest('.searchContact').html(`<div class="alert alert-danger" role="alert">Request Rejected</div>`);
+        }
+        $(elementObj).closest('.searchContact').removeClass("searchContact");
+    })
 }
 
 socket.on("message", (message) => {
@@ -246,10 +257,8 @@ $("#addContacts").on("click", () => {
     $("#profileDetails").html("<h2>add contact</h2>")
     $(".ms-headerBtn").hide();
     $(".chat-message").hide();
-    let senderId = $("#senderId").val();
     socket.emit("getRequestCount", { sendTo: senderId }, (count) => {
         $('#friendsRequestRecived').attr('data-requestcount', count);
-        console.log('count - ',count);
     })
     const html = Mustache.render(addContactTemplate, { name: "vijay" })
     $("#messages").html(html)
@@ -282,7 +291,6 @@ $(".chat-history").on("click", '.fa-user-plus', function () {
     let reciver = $(this).data("personalid");
     $(this).removeClass("fa-user-plus");
     $(this).addClass("fa-spinner fa-pulse");
-    let senderId = $("#senderId").val();
     socket.emit("addFriendRequest", { senderId, reciver }, (msg) => {
         setTimeout(() => {
             $(this).removeClass("fa-spinner fa-pulse");
@@ -291,11 +299,23 @@ $(".chat-history").on("click", '.fa-user-plus', function () {
     })
 })
 $(".chat-history").on("click", '#friendsRequestRecived', function () {
-    let senderId = $("#senderId").val();
-    socket.emit("getRequestList", { sendTo: senderId }, (count) => {
-        console.log(count);
-        const html = Mustache.render(friendRequestListTemplate)
-        $("#searchResult").html(html)
+
+    socket.emit("getRequestList", { sendTo: senderId }, (userList) => {
+        if (userList.length > 0) {
+            const html = Mustache.render(friendRequestListTemplate, { userList })
+            $("#searchResult").html(html)
+        } else {
+            $("#searchResult").html(`<div class="alert alert-secondary m-5" role="alert">No Pending Requests!</div>`)
+        }
     })
-    console.log('Friend request button clicked');
+})
+
+$(".chat-history").on("click", '.acceptBtn', async function () {
+    let fromRequest = $(this).attr('data-personalId');
+    updateRequestStatus(fromRequest, senderId, '2', this);
+})
+
+$(".chat-history").on("click", '.rejectBtn', async function () {
+    let fromRequest = $(this).attr('data-personalId');
+    updateRequestStatus(fromRequest, senderId, '3', this);
 })

@@ -184,14 +184,16 @@
         {{/userList}}
     </script>
     <script id="friendRequestList-template" type="text/html">
+        {{#userList}}
             <div class="searchContact">
-                <img class="profile" src="/images/default.svg" alt="avatar">
-                <span>vijay test</span>
+                <img class="profile" src="/images/{{profile}}.svg" alt="avatar">
+                <span>{{name}}</span>
                 <div class="float-right p-2">
-                    <a href="#" class="btn btn-info">Accept</a>
-                    <a href="#" class="btn btn-danger">Reject</a>
+                    <a class="btn btn-info acceptBtn" data-personalId="{{_id}}">Accept</a>
+                    <a class="btn btn-danger rejectBtn" data-personalId="{{_id}}">Reject</a>
                 </div>
             </div>
+        {{/userList}}
     </script>
     <script id="unReadLine-template" type="text/html">
         <div class="clearfix unreadDiv">

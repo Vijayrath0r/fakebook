@@ -7,6 +7,8 @@ const sendFriendRequest = async (senderId, receiverId) => {
         const existingRequest = await FriendRequest.findOne({ from: senderId, to: receiverId });
 
         if (existingRequest) {      // Friend request already exists.
+            existingRequest.status = '1';
+            await existingRequest.save();
             return existingRequest;
         } else {                    // Create a new friend request
             const newRequest = new FriendRequest({
@@ -26,24 +28,45 @@ async function getRecivedRequestCount(userId) {
         const count = await FriendRequest.countDocuments({ to: userId, status: '1' });
         return count;
     } catch (error) {
-        console.error("Error counting received accepted requests:", error);
         throw error; // Propagate the error for handling at a higher level
     }
 }
 async function getRecivedRequests(userId) {
     try {
-        const requests = await FriendRequest.find({ to: userId }).populate({
+        let userList = [];
+        const requests = await FriendRequest.find({ to: userId, status: '1' }).populate({
             path: 'from',
             select: 'id name profile'
         });
-        return requests;
+        requests.forEach(request => {
+            userList.push(request.from);
+        })
+        return userList;
     } catch (error) {
-        console.error("Error getting received friend requests:", error);
+        throw error; // Propagate the error for handling at a higher level
+    }
+}
+async function updateRequestStatus(from, to, status) {
+    try {
+        // Find the friend request with the given from and to users
+        const friendRequest = await FriendRequest.findOne({ from, to, status: '1' });
+
+        if (!friendRequest) {
+            throw new Error('Friend request not found');
+        }
+
+        // Update the status
+        friendRequest.status = status;
+        await friendRequest.save();
+
+        return friendRequest;
+    } catch (error) {
         throw error; // Propagate the error for handling at a higher level
     }
 }
 module.exports = {
     sendFriendRequest,
     getRecivedRequestCount,
-    getRecivedRequests
+    getRecivedRequests,
+    updateRequestStatus
 }

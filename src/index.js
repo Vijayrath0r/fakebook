@@ -6,7 +6,7 @@ const socketio = require("socket.io");
 const { generateMessage, saveMessage, getConversation, markReadMessage, getLastReadMessage } = require("./utils/messages.js")
 const { addUser, removeUser, getUser, getContactsOfUserByPersoanalId, markOnline, markOffline, searchContactsForUser } = require("./utils/users.js")
 const { getConversationId, createNewConversation } = require("./utils/conversation.js")
-const { sendFriendRequest,getRecivedRequestCount,getRecivedRequests } = require("./utils/friendRequest.js")
+const { sendFriendRequest, getRecivedRequestCount, getRecivedRequests, updateRequestStatus } = require("./utils/friendRequest.js")
 require('./db/mongoose')
 const Users = require('./models/users')
 const session = require('express-session');
@@ -191,17 +191,21 @@ io.on("connection", (socket) => {
     })
 
     socket.on('addFriendRequest', async ({ senderId, reciver }, callback) => {
-        let response =  await sendFriendRequest(senderId,reciver);
+        let response = await sendFriendRequest(senderId, reciver);
         callback(response);
     })
     socket.on('getRequestCount', async ({ sendTo }, callback) => {
-        let response =  await getRecivedRequestCount(sendTo);
+        let response = await getRecivedRequestCount(sendTo);
         callback(response);
     })
 
     socket.on('getRequestList', async ({ sendTo }, callback) => {
-        let response =  await getRecivedRequests(sendTo);
-        console.log('response = ',response);
+        let userList = await getRecivedRequests(sendTo);
+        callback(userList);
+    })
+
+    socket.on('updateRequestStatus', async ({ from, to, status }, callback) => {
+        let response = await updateRequestStatus(from, to, status);
         callback(response);
     })
 });
