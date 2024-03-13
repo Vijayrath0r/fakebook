@@ -95,7 +95,7 @@ async function updateRequestStatus(from, to, status, elementObj) {
 }
 
 socket.on("message", (message) => {
-    if($("#reciver").val() == message.from || sender== message.from){
+    if ($("#reciver").val() == message.from || sender == message.from) {
         const tempMessage = {
             messageId: message.messageId,
             username: message.username,
@@ -113,7 +113,7 @@ socket.on("message", (message) => {
 });
 
 socket.on("LocationMessage", (message) => {
-    if($("#reciver").val() == message.from || sender== message.from){
+    if ($("#reciver").val() == message.from || sender == message.from) {
         const tempMessage = {
             messageId: message.messageId,
             username: message.username,
@@ -201,6 +201,10 @@ const changeReciver = (reciver) => {
     $("#reciver").val(reciver)
     $('.userList').removeClass('active');
     $("#" + reciver).addClass("active");
+    if ($(window).width() < 767) {
+        $(".people-list").hide();
+        $(".chat").show();
+    }
     $("#refreshContacts").click();
     // autoScroll();
 }
@@ -257,7 +261,7 @@ socket.on("showNotification", ({ senderNotifincation, reciverNotification, userN
 })
 
 $("#addContacts").on("click", () => {
-    $("#profileDetails").html("<h2>add contact</h2>")
+    $("#profileDetails").html(`<a id="backBtn"><i class="fa fa-arrow-left"></i></a><h2>add contact</h2>`)
     $(".ms-headerBtn").hide();
     $(".chat-message").hide();
     socket.emit("getRequestCount", { sendTo: senderId }, (count) => {
@@ -265,6 +269,10 @@ $("#addContacts").on("click", () => {
     })
     const html = Mustache.render(addContactTemplate, { name: "vijay" })
     $("#messages").html(html)
+    if ($(window).width() < 767) {
+        $(".people-list").hide();
+        $(".chat").show();
+    }
 })
 
 $(document.body).on('click', '#searchContactbtn', function () {
@@ -322,3 +330,8 @@ $(".chat-history").on("click", '.rejectBtn', async function () {
     let fromRequest = $(this).attr('data-personalId');
     updateRequestStatus(fromRequest, senderId, '3', this);
 })
+
+$("body").on("click", '#backBtn', async function () {
+    $(".people-list").show();
+    $(".chat").hide();
+});

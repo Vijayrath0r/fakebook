@@ -152,6 +152,15 @@ span.unreadcount {
     justify-content: end;
 }
 
+#backBtn {
+    float: left;
+    padding: 10px;
+    border: 1px gray solid;
+    border-radius: 20px;
+    margin-right: 5px;
+    display: none;
+}
+
 #messageForm {
     display: flex;
     width: 100%;
@@ -165,8 +174,7 @@ span.unreadcount {
 .chat .chat-history {
     padding: 20px;
     border-bottom: 2px solid #fff;
-    max-height: 720px;
-    min-height: 700px;
+    height: 75vh;
     overflow-y: auto;
     overflow-x: hidden;
 }
@@ -335,10 +343,12 @@ span.message-data-time {
     animation: waviy 1s infinite;
     animation-delay: calc(.1s * var(--i));
 }
-.searchBox{
+
+.searchBox {
     display: flex;
     justify-content: space-evenly;
 }
+
 #friendsRequestRecived:before {
     content: attr(data-requestCount);
     color: #475dd3;
@@ -348,6 +358,7 @@ span.message-data-time {
     left: 50px;
     display: inline-block;
 }
+
 .searchContact {
     margin: 15px 35px;
     box-shadow: 0 20px 27px 0 rgb(0 0 0 / 5%);
@@ -378,6 +389,7 @@ span.message-data-time {
 .fa-user-check:before {
     color: #3cb13c;
 }
+
 .fa-user-times:before {
     color: #d97575;
 }
@@ -396,13 +408,38 @@ span.message-data-time {
 }
 
 @media only screen and (max-width: 767px) {
+    #backBtn {
+        display: block;
+    }
+
+    .ms-headerBtn {
+        display: none !important;
+    }
+
     .chat-app .people-list {
-        height: 465px;
         width: 100%;
-        overflow-x: auto;
-        background: #fff;
-        left: -400px;
         display: none
+    }
+
+    #logoutButton {
+        position: relative;
+    }
+
+    .searchContact {
+        margin: 10px 0px;
+    }
+
+    .searchContact .profile {
+        width: 50px;
+    }
+
+    .searchContact span {
+        padding: 0;
+    }
+
+    #chat-sidebar {
+        height: 65vh;
+        overflow-y: auto;
     }
 
     .chat-app .people-list.open {
@@ -418,8 +455,9 @@ span.message-data-time {
     }
 
     .chat-app .chat-history {
-        height: 300px;
-        overflow-x: auto
+        height: 60vh;
+        min-height: 60vh;
+        overflow-y: auto
     }
 }
 
