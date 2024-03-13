@@ -95,32 +95,36 @@ async function updateRequestStatus(from, to, status, elementObj) {
 }
 
 socket.on("message", (message) => {
-    const tempMessage = {
-        messageId: message.messageId,
-        username: message.username,
-        message: message.text,
-        createdAt: moment(message.createdAt).format("h:mm a"),
-        senderClass: sender == message.from ? "my-message float-right" : "other-message",
-        dateClass: sender == message.from ? "text-right" : "text-left",
-        messageType: 0
+    if($("#reciver").val() == message.from || sender== message.from){
+        const tempMessage = {
+            messageId: message.messageId,
+            username: message.username,
+            message: message.text,
+            createdAt: moment(message.createdAt).format("h:mm a"),
+            senderClass: sender == message.from ? "my-message float-right" : "other-message",
+            dateClass: sender == message.from ? "text-right" : "text-left",
+            messageType: 0
+        }
+        showMessages(tempMessage)
     }
-    showMessages(tempMessage)
     // $('.chat-history').animate({ scrollTop: 9999 }, 'slow');
     $("#refreshContacts").click();
     autoScroll();
 });
 
 socket.on("LocationMessage", (message) => {
-    const tempMessage = {
-        messageId: message.messageId,
-        username: message.username,
-        message: message.text,
-        createdAt: moment(message.createdAt).format("h:mm a"),
-        senderClass: sender == message.from ? "my-message float-right" : "other-message",
-        dateClass: sender == message.from ? "text-right" : "text-left",
-        messageType: 1
+    if($("#reciver").val() == message.from || sender== message.from){
+        const tempMessage = {
+            messageId: message.messageId,
+            username: message.username,
+            message: message.text,
+            createdAt: moment(message.createdAt).format("h:mm a"),
+            senderClass: sender == message.from ? "my-message float-right" : "other-message",
+            dateClass: sender == message.from ? "text-right" : "text-left",
+            messageType: 1
+        }
+        showMessages(tempMessage)
     }
-    showMessages(tempMessage)
     // $('.chat-history').animate({ scrollTop: 9999 }, 'slow');
     $("#refreshContacts").click();
     autoScroll();
