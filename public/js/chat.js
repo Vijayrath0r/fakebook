@@ -139,8 +139,7 @@ socket.on("roomData", ({ users }) => {
     });
 })
 
-$("#messageForm").on("submit", (e) => {
-    e.preventDefault();
+$("#send-message").on("click", () => {
     $('#send-message').attr('disabled', 'disabled');
     const message = $("#message").val();
     const from = sender;
