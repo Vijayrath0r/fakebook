@@ -94,6 +94,12 @@ async function updateRequestStatus(from, to, status, elementObj) {
     })
 }
 
+function openProfileModal() {
+    setTimeout(function () {
+        $('#profileModal').modal('show');
+    }, 230);
+}
+
 socket.on("message", (message) => {
     if ($("#reciver").val() == message.from || sender == message.from) {
         const tempMessage = {

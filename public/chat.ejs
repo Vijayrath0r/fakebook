@@ -9,6 +9,7 @@
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <!-- <link rel="stylesheet" href="/css/style.css"> -->
     <link rel="stylesheet" href="/css/chat.css">
+    <link rel="stylesheet" href="/css/profile.css">
     <title>FakeBook</title>
 </head>
 
@@ -26,11 +27,11 @@
                             <input type="hidden" id="reciver" value="<%= user.personalId %>">
                             <span>FakeBook</span>
                         </div>
-                        <div class="clearfix userList self-details" id="<%= user.personalId %>"
-                            onclick=changeReciver('<%=user.personalId %>')>
+                        <div class="clearfix userList self-details" id="<%= user.personalId %>">
                             <div>
-                                <img src="/images/<%= user.profile %>.svg" alt="avatar">
-                                <div class="about" style="width: 50%;">
+                                <img src="/images/<%= user.profile %>.svg" alt="avatar" data-toggle="modal"
+                                    href="javascript:void(0)" onclick="openProfileModal();">
+                                <div class="about" style="width: 50%;" onclick=changeReciver('<%=user.personalId %>')>
                                     <div class="name">
                                         <%= user.name %>
                                     </div>
@@ -105,6 +106,50 @@
             </div>
         </div>
     </div>
+    <div class="modal fade login" id="profileModal">
+        <div class="modal-dialog login animated">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="profilepopupcontainer">
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div class="profilepopupcard p-0">
+                                    <div class="card-image">
+                                        <img id="profileImage"
+                                            src="https://images.pexels.com/photos/2746187/pexels-photo-2746187.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
+                                            alt="">
+                                    </div>
+                                    <div class="card-content d-flex flex-column align-items-center">
+                                        <h4 class="pt-2" id="profileName">SomeOne Famous</h4>
+                                        <h5>Creative Desinger</h5>
+
+                                        <ul class="social-icons d-flex justify-content-center">
+                                            <li style="--i:1">
+                                                <a href="#">
+                                                    <span class="fab fa-facebook"></span>
+                                                </a>
+                                            </li>
+                                            <li style="--i:2">
+                                                <a href="#">
+                                                    <span class="fab fa-twitter"></span>
+                                                </a>
+                                            </li>
+                                            <li style="--i:3">
+                                                <a href="#">
+                                                    <span class="fab fa-instagram"></span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <script id="profile-template" type="text/html">
         <a id="backBtn"><i class="fa fa-arrow-left"></i></a>
         <a href="javascript:void(0);" data-toggle="modal" data-target="#view_info">
@@ -144,9 +189,10 @@
 
     <script id="sidebar-template" type="text/html">
             {{#users}}
-                <li class="clearfix userList" id="{{personalId}}" onclick=changeReciver('{{personalId}}')>
-                    <img src="/images/{{profile}}.svg" alt="avatar">
-                    <div class="about">
+                <li class="clearfix userList" id="{{personalId}}">
+                    <img src="/images/{{profile}}.svg" alt="avatar" data-toggle="modal" href="javascript:void(0)"
+                    onclick="openProfileModal();">
+                    <div class="about" onclick=changeReciver('{{personalId}}')>
                         <div class="name">{{name}}</div><span class="unreadcount">{{unreadCount}}</span>
                         <div class="status"> <i class="fa fa-circle {{onlineStatus}}"></i> {{onlineTime}} </div>
                     </div>
