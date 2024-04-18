@@ -26,19 +26,19 @@
 
 .profilepopupcard .card-image {
     width: 100%;
-    max-height: 340px;
+    height: 100%;
 }
 
 .profilepopupcard .card-image img {
     width: 100%;
-    max-height: 340px;
+    height: 100%;
     object-fit: cover;
 }
 
 .profilepopupcard .card-content {
     position: absolute;
     bottom: -180px;
-    color: #fff;
+    color: black;
     background: rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(15px);
     min-height: 140px;

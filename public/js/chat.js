@@ -94,7 +94,13 @@ async function updateRequestStatus(from, to, status, elementObj) {
     })
 }
 
-function openProfileModal() {
+function openProfileModal(reciver) {
+    socket.emit("chatUserDetails", { reciver, sender }, (userDetails) => {
+        const { name, profile } = userDetails[0];
+        $('#profileImage').attr('src', "images/" + profile + ".svg");
+        // Populate profile name
+        $('#profileName').text(name);
+    })
     setTimeout(function () {
         $('#profileModal').modal('show');
     }, 230);

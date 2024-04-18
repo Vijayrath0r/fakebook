@@ -30,8 +30,8 @@
                         <div class="clearfix userList self-details" id="<%= user.personalId %>">
                             <div>
                                 <img src="/images/<%= user.profile %>.svg" alt="avatar" data-toggle="modal"
-                                    href="javascript:void(0)" onclick="openProfileModal();">
-                                <div class="about" style="width: 50%;" onclick=changeReciver('<%=user.personalId %>')>
+                                    href="javascript:void(0)" onclick="openProfileModal('<%=user.personalId %>');">
+                                <div class="about" style="width: 50%;" onclick="changeReciver('<%=user.personalId %>')">
                                     <div class="name">
                                         <%= user.name %>
                                     </div>
@@ -126,17 +126,17 @@
                                         <ul class="social-icons d-flex justify-content-center">
                                             <li style="--i:1">
                                                 <a href="#">
-                                                    <span class="fab fa-facebook"></span>
+                                                    <span class="fa fa-phone text-dark"></span>
                                                 </a>
                                             </li>
                                             <li style="--i:2">
                                                 <a href="#">
-                                                    <span class="fab fa-twitter"></span>
+                                                    <span class="fa fa-comment text-dark"></span>
                                                 </a>
                                             </li>
                                             <li style="--i:3">
                                                 <a href="#">
-                                                    <span class="fab fa-instagram"></span>
+                                                    <span class="fa fa-user text-dark"></span>
                                                 </a>
                                             </li>
                                         </ul>
@@ -191,8 +191,8 @@
             {{#users}}
                 <li class="clearfix userList" id="{{personalId}}">
                     <img src="/images/{{profile}}.svg" alt="avatar" data-toggle="modal" href="javascript:void(0)"
-                    onclick="openProfileModal();">
-                    <div class="about" onclick=changeReciver('{{personalId}}')>
+                    onclick="openProfileModal('{{personalId}}');">
+                    <div class="about" onclick="changeReciver('{{personalId}}')">
                         <div class="name">{{name}}</div><span class="unreadcount">{{unreadCount}}</span>
                         <div class="status"> <i class="fa fa-circle {{onlineStatus}}"></i> {{onlineTime}} </div>
                     </div>
