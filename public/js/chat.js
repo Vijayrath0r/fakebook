@@ -183,6 +183,7 @@ $("#send-location").on("click", () => {
 });
 
 const changeReciver = (reciver) => {
+    $("#send-picture-container").hide();
     socket.emit("chatUserDetails", { reciver, sender }, (userDetails) => {
         const { name, profile } = userDetails[0];
         const template = $("#profile-template").html();
@@ -346,4 +347,35 @@ $(".chat-history").on("click", '.rejectBtn', async function () {
 $("body").on("click", '#backBtn', async function () {
     $(".people-list").show();
     $(".chat").hide();
+});
+
+$("#send-picture-container").hide();
+
+$("#send-picture").on("click", () => {
+    $("#send-picture-container").toggle();
+})
+
+
+let isDown = false;
+let startX;
+let scrollLeft;
+
+$("#send-picture-container").on('mousedown touchstart', (e) => {
+    console.log("mouse/touch down");
+    isDown = true;
+    startX = e.pageX || e.originalEvent.touches[0].pageX;
+    scrollLeft = $("#send-picture-container").scrollLeft();
+});
+
+$(document).on('mouseup touchend', () => {
+    console.log("mouse/touch up");
+    isDown = false;
+});
+
+$(document).on('mousemove touchmove', (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX || e.originalEvent.touches[0].pageX;
+    const walk = (x - startX); // Adjust scrolling speed as needed
+    $("#send-picture-container").scrollLeft(scrollLeft - walk);
 });

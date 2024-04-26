@@ -164,11 +164,22 @@ span.unreadcount {
 #messageForm {
     display: flex;
     width: 100%;
-    justify-content: center;
+    align-items: center;
 }
 
-.input-group-text {
-    padding: 0.575rem 1.75rem !important;
+#messageForm .input-group-prepend {
+    flex: 0 0 auto;
+    height: auto;
+}
+
+#messageForm .col-8 {
+    flex: 1;
+}
+
+#messageForm .input-group-prepend button {
+    width: 100%;
+    height: 100%;
+    padding: 10px;
 }
 
 .chat .chat-history {
@@ -275,7 +286,8 @@ span.message-data-time {
 }
 
 .chat .chat-message {
-    padding: 20px
+    padding: 20px;
+    position: relative;
 }
 
 .chat .unreadDiv {
@@ -392,6 +404,42 @@ span.message-data-time {
 
 .fa-user-times:before {
     color: #d97575;
+}
+
+#send-picture-container {
+    padding: 20px;
+    position: absolute;
+    bottom: 70px;
+    width: 95%;
+    max-width: 1000px;
+    overflow-x: auto;
+    white-space: nowrap;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background: #817e7e42;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+#send-picture-container::-webkit-scrollbar {
+    display: none;
+}
+
+#send-picture-container-main {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+}
+
+#send-picture-container-main img {
+    max-width: 120px;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    height: auto;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
 }
 
 @keyframes waviy {
