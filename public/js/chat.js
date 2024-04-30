@@ -17,7 +17,7 @@ const friendRequestListTemplate = $("#friendRequestList-template").html();
 const unReadLineTemplate = $("#unReadLine-template").html();
 
 
-
+$("#send-picture-container").hide();
 const { username, room } = Qs.parse(location.search, {
     ignoreQueryPrefix: true
 })
@@ -349,10 +349,10 @@ $("body").on("click", '#backBtn', async function () {
     $(".chat").hide();
 });
 
-$("#send-picture-container").hide();
 
 $("#send-picture").on("click", () => {
-    $("#send-picture-container").toggle();
+    $("#send-picture-container").slideToggle(200);
+    $("#send-picture-container").toggleClass("active");
 })
 
 

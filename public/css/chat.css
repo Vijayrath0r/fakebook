@@ -434,6 +434,13 @@ span.message-data-time {
     background: #817e7e42;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    height: 0; /* Start with height 0 */
+    transition: height 0.2s ease; /* Smooth transition for height change */
+    overflow: hidden; /* Hide overflow content when height is 0 */
+}
+
+#send-picture-container.active {
+    height: auto; /* Change height to auto when container is active */
 }
 
 #send-picture-container::-webkit-scrollbar {
