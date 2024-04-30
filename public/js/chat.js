@@ -379,3 +379,56 @@ $(document).on('mousemove touchmove', (e) => {
     const walk = (x - startX); // Adjust scrolling speed as needed
     $("#send-picture-container").scrollLeft(scrollLeft - walk);
 });
+
+$('#selectImageBtn').click(function () {
+    $('#selectImageBtnInput').click();
+});
+
+let selectedFiles = [];
+
+$('#selectImageBtnInput').change(function () {
+    const files = event.target.files;
+
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+
+        // Check if the file with the same name already exists in selectedFiles
+        if (!selectedFiles.includes(file.name)) {
+            selectedFiles.push(file.name); // Add file name to selectedFiles array
+
+            const imageBlock = $('<div>').addClass('imageBlock').css('position', 'relative');
+            const img = $('<img>').attr('src', URL.createObjectURL(file)).attr('alt', '');
+            const removeButton = $('<i>').addClass('removeSelectedImage fa-solid fa-circle-xmark').attr('data-file-name', file.name);
+
+            removeButton.click(function () {
+                $(this).closest('.imageBlock').remove(); // Remove the parent image block
+                // Remove the file name from selectedFiles array
+                const fileNameToRemove = $(this).attr('data-file-name');
+                const indexToRemove = selectedFiles.indexOf(fileNameToRemove);
+                if (indexToRemove !== -1) {
+                    selectedFiles.splice(indexToRemove, 1);
+                }
+            });
+
+            imageBlock.append(img);
+            imageBlock.append(removeButton);
+            $('#send-picture-container-main').prepend(imageBlock); // Prepend image block to show the last selected image at the beginning
+        }
+    }
+});
+
+// Handle click on image block to display full screen image
+$(document).on('click', '.imageBlock img', function () {
+    const src = $(this).attr('src');
+    $('#fullScreenImage').attr('src', src);
+    $('#imageModal').fadeIn(); // Fade in the modal
+});
+
+$('.imageModalClose, #imageModal').on('click', function () {
+    $('#imageModal').fadeOut(); // Fade out the modal
+});
+
+// Prevent modal from closing when clicking on the image content
+$(' #imageModal .modal-content').on('click', function (e) {
+    e.stopPropagation();
+});
