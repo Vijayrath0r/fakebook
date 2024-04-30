@@ -155,10 +155,10 @@ span.unreadcount {
 #backBtn {
     float: left;
     padding: 10px;
-    border: 1px gray solid;
     border-radius: 20px;
     margin-right: 5px;
     display: none;
+    background: #80808014;
 }
 
 #messageForm {
@@ -376,13 +376,17 @@ span.message-data-time {
     justify-content: space-evenly;
 }
 
+.searchBox .input-group-text {
+    display: inline-block;
+}
+
 #friendsRequestRecived:before {
     content: attr(data-requestCount);
     color: #475dd3;
     font-size: 15px;
     position: absolute;
-    bottom: 18px;
-    left: 50px;
+    top: -10px;
+    left: 40px;
     display: inline-block;
 }
 
@@ -434,13 +438,17 @@ span.message-data-time {
     background: #817e7e42;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    height: 0; /* Start with height 0 */
-    transition: height 0.2s ease; /* Smooth transition for height change */
-    overflow: hidden; /* Hide overflow content when height is 0 */
+    height: 0;
+    /* Start with height 0 */
+    transition: height 0.2s ease;
+    /* Smooth transition for height change */
+    overflow: hidden;
+    /* Hide overflow content when height is 0 */
 }
 
 #send-picture-container.active {
-    height: auto; /* Change height to auto when container is active */
+    height: auto;
+    /* Change height to auto when container is active */
 }
 
 #send-picture-container::-webkit-scrollbar {
