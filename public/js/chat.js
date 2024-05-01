@@ -414,11 +414,14 @@ $(document).on('mousemove touchmove', (e) => {
 
 // Function to display image preview
 function displayImagePreview(file) {
+    selectedImageFiles.push(file); // Add the selected file to the list
     const imageBlock = $('<div>').addClass('imageBlock').css('position', 'relative');
     const img = $('<img>').attr('src', URL.createObjectURL(file)).attr('alt', '');
     const removeButton = $('<i>').addClass('removeSelectedImage fa-solid fa-circle-xmark').attr('data-file-name', file.name);
 
     removeButton.click(function () {
+        const fileName = $(this).data('file-name');
+        selectedImageFiles = selectedImageFiles.filter(item => item.name !== fileName); // Remove the file from the selected files list
         $(this).closest('.imageBlock').remove(); // Remove the parent image block
     });
 
@@ -437,11 +440,37 @@ $('#selectImageBtnInput').change(function (event) {
     }
 });
 
+$('#send-picture-message').click(function () {
+    const formData = new FormData();
+
+    // Append all selected files to the FormData object
+    for (let i = 0; i < selectedImageFiles.length; i++) {
+        formData.append('images', selectedImageFiles[i]);
+    }
+
+    // Send the FormData object to the backend using AJAX
+    $.ajax({
+        url: '/messages/uploadImages',
+        type: 'POST',
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function (response) {
+            console.log('Images submitted successfully');
+            console.log(response);
+            $("#send-picture-container-main").html("");
+            $("#send-picture-icon").click();
+        },
+        error: function (error) {
+            console.error('Error submitting images:', error);
+        }
+    });
+});
+
 // Event listener for Select Images button click
 $('#selectImageBtn').click(function () {
     $('#selectImageBtnInput').click(); // Trigger file input click
 });
-
 
 // Handle click on image block to display full screen image
 $(document).on('click', '.imageBlock img', function () {
