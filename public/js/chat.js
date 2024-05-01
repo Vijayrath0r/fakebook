@@ -2,6 +2,7 @@ const socket = io();
 var typingTimer;
 let typingTimeout;
 var doneTypingInterval = 500;
+let selectedImageFiles = [];
 const logedusersEmail = $("#email").val();
 const sender = $("#sender").val();
 const senderId = $("#senderId").val();
@@ -18,6 +19,7 @@ const unReadLineTemplate = $("#unReadLine-template").html();
 
 
 $("#send-picture-container").hide();
+$("#send-picture-message").hide();
 const { username, room } = Qs.parse(location.search, {
     ignoreQueryPrefix: true
 })
@@ -180,6 +182,18 @@ $("#send-location").on("click", () => {
             $('#send-location').removeAttr('disabled');
         })
     })
+});
+
+$("#send-picture-message").on("click", () => {
+    $('#send-picture-message').attr('disabled', 'disabled');
+    // const message = $("#message").val();
+    // const from = sender;
+    // const to = $("#reciver").val();
+    // socket.emit("sendMessage", { message, from, to }, (msg) => {
+    //     $('#message').val("");
+    //     $('#message').focus();
+    // });
+    $('#send-picture-message').removeAttr('disabled');
 });
 
 const changeReciver = (reciver) => {
@@ -350,10 +364,28 @@ $("body").on("click", '#backBtn', async function () {
 });
 
 
-$("#send-picture").on("click", () => {
-    $("#send-picture-container").slideToggle(200);
-    $("#send-picture-container").toggleClass("active");
-})
+$("#send-picture-icon").on("click", () => {
+    const isOpen = $("#send-picture-icon").attr("data-open");
+    const slideDuration = 200;
+
+    // Toggle slide and classes based on isOpen state
+    if (isOpen === "0") {
+        $("#send-picture-container").slideDown(slideDuration).addClass("active");
+        $("#message").parent().hide();
+        $("#send-message").hide();
+        $("#send-picture-message").show().parent().css("flex", "1");
+    } else {
+        $("#send-picture-container").slideUp(slideDuration).removeClass("active");
+        $("#message").parent().show();
+        $("#send-message").show();
+        $("#send-picture-message").hide().parent().css("flex", "0");
+    }
+
+    // Toggle the isOpen state
+    $("#send-picture-icon").attr("data-open", isOpen === "1" ? "0" : "1");
+});
+
+
 
 
 let isDown = false;
@@ -380,42 +412,36 @@ $(document).on('mousemove touchmove', (e) => {
     $("#send-picture-container").scrollLeft(scrollLeft - walk);
 });
 
-$('#selectImageBtn').click(function () {
-    $('#selectImageBtnInput').click();
-});
+// Function to display image preview
+function displayImagePreview(file) {
+    const imageBlock = $('<div>').addClass('imageBlock').css('position', 'relative');
+    const img = $('<img>').attr('src', URL.createObjectURL(file)).attr('alt', '');
+    const removeButton = $('<i>').addClass('removeSelectedImage fa-solid fa-circle-xmark').attr('data-file-name', file.name);
 
-let selectedFiles = [];
+    removeButton.click(function () {
+        $(this).closest('.imageBlock').remove(); // Remove the parent image block
+    });
 
-$('#selectImageBtnInput').change(function () {
+    imageBlock.append(img);
+    imageBlock.append(removeButton);
+    $('#send-picture-container-main').prepend(imageBlock); // Prepend image block to show the last selected image at the beginning
+}
+
+// Event listener for file input change
+$('#selectImageBtnInput').change(function (event) {
     const files = event.target.files;
 
     for (let i = 0; i < files.length; i++) {
         const file = files[i];
-
-        // Check if the file with the same name already exists in selectedFiles
-        if (!selectedFiles.includes(file.name)) {
-            selectedFiles.push(file.name); // Add file name to selectedFiles array
-
-            const imageBlock = $('<div>').addClass('imageBlock').css('position', 'relative');
-            const img = $('<img>').attr('src', URL.createObjectURL(file)).attr('alt', '');
-            const removeButton = $('<i>').addClass('removeSelectedImage fa-solid fa-circle-xmark').attr('data-file-name', file.name);
-
-            removeButton.click(function () {
-                $(this).closest('.imageBlock').remove(); // Remove the parent image block
-                // Remove the file name from selectedFiles array
-                const fileNameToRemove = $(this).attr('data-file-name');
-                const indexToRemove = selectedFiles.indexOf(fileNameToRemove);
-                if (indexToRemove !== -1) {
-                    selectedFiles.splice(indexToRemove, 1);
-                }
-            });
-
-            imageBlock.append(img);
-            imageBlock.append(removeButton);
-            $('#send-picture-container-main').prepend(imageBlock); // Prepend image block to show the last selected image at the beginning
-        }
+        displayImagePreview(file);
     }
 });
+
+// Event listener for Select Images button click
+$('#selectImageBtn').click(function () {
+    $('#selectImageBtnInput').click(); // Trigger file input click
+});
+
 
 // Handle click on image block to display full screen image
 $(document).on('click', '.imageBlock img', function () {
