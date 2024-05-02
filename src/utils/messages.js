@@ -10,15 +10,16 @@ const Users = require('../models/users')
 //     messageType:0
 // });
 // message.save()
-const getConversation = async (from, to) => {
+const getConversation = async (from, to, skip) => {
     const tempMessages = await Message.find({
         $or: [
             { from: from, to: to },
             { from: to, to: from }
         ]
     })
-    .sort({ createdAt: -1 }) // Sort by createdAt field in descending order
-    .limit(20); // Limit to last 20 messages
+        .sort({ createdAt: -1 }) // Sort by createdAt field in descending order
+        .skip(skip) // Skip specified number of records
+        .limit(20); // Limit to last 20 messages
 
     // Reverse the array to get the last 20 messages in ascending order
     const messagesAsc = tempMessages.reverse();

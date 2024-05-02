@@ -3,6 +3,8 @@ var typingTimer;
 let typingTimeout;
 var doneTypingInterval = 500;
 let selectedImageFiles = [];
+let chatSkip = 0;
+let listedAllMessage = false;
 const logedusersEmail = $("#email").val();
 const sender = $("#sender").val();
 const senderId = $("#senderId").val();
@@ -38,7 +40,7 @@ const autoScroll = () => {
         $("#messages")[0].scrollTop = containerHeight;
     }
 }
-const renderMessage = (message, template) => {
+const renderMessage = (message, template, messagePlace) => {
     const html = Mustache.render(template, {
         messageId: message.messageId,
         username: message.name,
@@ -47,10 +49,10 @@ const renderMessage = (message, template) => {
         senderClass: message.senderClass,
         dateClass: message.dateClass
     });
-    messagesContainer.insertAdjacentHTML('beforeend', html);
+    messagesContainer.insertAdjacentHTML(messagePlace, html);
 };
 
-const showMessages = (message) => {
+const showMessages = (message, messagePlace = 'beforeend') => {
     let template;
     switch (message.messageType) {
         case 2:
@@ -63,7 +65,7 @@ const showMessages = (message) => {
             template = textTemplate;
             break;
     }
-    renderMessage(message, template);
+    renderMessage(message, template, messagePlace);
 };
 
 function showNotification(userName, message) {
@@ -220,6 +222,8 @@ $("#send-picture-message").on("click", () => {
 });
 
 const changeReciver = (reciver) => {
+    listedAllMessage = false;
+    chatSkip = 0;
     $("#send-picture-container").hide();
     socket.emit("chatUserDetails", { reciver, sender }, (userDetails) => {
         const { name, profile } = userDetails[0];
@@ -232,8 +236,11 @@ const changeReciver = (reciver) => {
     })
     $(".ms-headerBtn").show();
     $(".chat-message").show();
-    socket.emit("getconversation", { sender, reciver, sender }, ({ messages, lastReadMessageId }) => {
+    socket.emit("getconversation", { sender, reciver, skip: chatSkip }, ({ messages, lastReadMessageId }) => {
         $("#messages").html('');
+        if (messages.length < 20) {
+            listedAllMessage = true;
+        }
         messages.forEach(message => {
             showMessages(message);
         });
@@ -416,14 +423,12 @@ let startX;
 let scrollLeft;
 
 $("#send-picture-container").on('mousedown touchstart', (e) => {
-    console.log("mouse/touch down");
     isDown = true;
     startX = e.pageX || e.originalEvent.touches[0].pageX;
     scrollLeft = $("#send-picture-container").scrollLeft();
 });
 
 $(document).on('mouseup touchend', () => {
-    console.log("mouse/touch up");
     isDown = false;
 });
 
@@ -484,10 +489,7 @@ $('#send-picture-message').click(function () {
         success: function (response) {
             const fileList = response.fileList;
             fileList.forEach((message) => {
-                socket.emit("sendPictureMessage", { message, from, to }, (msg) => {
-
-                })
-                console.log(message);
+                socket.emit("sendPictureMessage", { message, from, to }, (msg) => { })
             })
             $("#send-picture-container-main").html("");
             $("#send-picture-icon").click();
@@ -517,4 +519,25 @@ $('.imageModalClose, #imageModal').on('click', function () {
 // Prevent modal from closing when clicking on the image content
 $(' #imageModal .modal-content').on('click', function (e) {
     e.stopPropagation();
+});
+
+$('#messages').on('scroll', function () {
+    if ($(this).scrollTop() === 0 && !listedAllMessage) {
+        let oldScrollHeight = $(this)[0].scrollHeight; // Get current scroll height
+        chatSkip += 20;
+        socket.emit("getconversation", { sender: $("#sender").val(), reciver: $("#reciver").val(), skip: chatSkip }, ({ messages, lastReadMessageId }) => {
+            messages = messages.reverse();
+            messages.forEach(message => {
+                showMessages(message, "afterbegin");
+            });
+            if (messages.length < 20) {
+                listedAllMessage = true;
+            }
+
+            // Calculate new scroll height after rendering messages
+            let newScrollHeight = $(this)[0].scrollHeight;
+            // Set scrollTop to maintain the position
+            $(this).scrollTop(newScrollHeight - oldScrollHeight);
+        });
+    }
 });

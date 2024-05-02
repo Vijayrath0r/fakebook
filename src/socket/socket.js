@@ -93,8 +93,8 @@ const socket = (io) => {
             callback(user);
         })
 
-        socket.on("getconversation", async ({ sender, reciver, logedUser }, callback) => {
-            const messagesArray = await getConversation(sender, reciver);
+        socket.on("getconversation", async ({ sender, reciver, skip }, callback) => {
+            const messagesArray = await getConversation(sender, reciver, skip);
             const lastReadMessageId = await getLastReadMessage(sender, reciver);
             const messages = [];
             messagesArray.forEach(message => {
