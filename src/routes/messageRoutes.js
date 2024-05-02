@@ -14,8 +14,12 @@ router.post('/uploadImages', multerMiddleware.array('images'), async (req, res) 
     // Upload each file to S3
     try {
         const results = await s3Service.uploadFilesToS3(files);
+        let fileList = [];
+        files.forEach((file) => {
+            fileList.push(process.env.AWS_BUCKET_URL + "shared/" + file.filename);
+        })
         deleteLocalFiles(files);
-        res.status(200).json({ message: 'Files uploaded to S3 successfully', results });
+        res.status(200).json({ message: 'Files uploaded to S3 successfully', fileList });
     } catch (error) {
         console.error('Error uploading files to S3:', error);
         res.status(500).json({ error: 'Error uploading files to S3' });

@@ -165,8 +165,10 @@
         </div>
     </div>
     <div id="imageModal" class="modal">
-        <span class="imageModalClose">&times;</span>
-        <img class="modal-content" id="fullScreenImage">
+        <div class="d-flex h-100">
+            <span class="imageModalClose">&times;</span>
+            <img class="modal-content" id="fullScreenImage">
+        </div>
     </div>
     <script id="profile-template" type="text/html">
         <a id="backBtn"><i class="fa fa-arrow-left"></i></a>
@@ -202,6 +204,15 @@
                 <span class="message-data-time">{{createdAt}}</span>
             </div>
             <div class="message {{senderClass}}"> <iframe src="{{message}}&amp;t=&amp;z=13&amp;ie=UTF8&amp;iwloc=&amp;output=embed" width=300 height=150 allowfullscreen></iframe> </div>
+        </li>
+    </script>
+
+    <script id="picturemessage-template" type="text/html">
+        <li class="clearfix {{dateClass}}" id="{{messageId}}">
+            <div class="message-data {{dateClass}}">
+                <span class="message-data-time">{{createdAt}}</span>
+            </div>
+            <div class="message {{senderClass}}"> <img class="messageImage" src="{{message}}" width=300 /> </div>
         </li>
     </script>
 

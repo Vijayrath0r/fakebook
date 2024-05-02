@@ -10,6 +10,7 @@ const logedName = $("#logedName").val();
 const reciver = $("#reciver").val();
 const textTemplate = $("#message-template").html();
 const Locationtemplate = $("#Locationmessage-template").html();
+const picturetemplate = $("#picturemessage-template").html();
 const sideBarTemplate = $("#sidebar-template").html();
 const messagesContainer = $("#messages")[0];
 const addContactTemplate = $("#addContact-template").html();
@@ -37,29 +38,33 @@ const autoScroll = () => {
         $("#messages")[0].scrollTop = containerHeight;
     }
 }
+const renderMessage = (message, template) => {
+    const html = Mustache.render(template, {
+        messageId: message.messageId,
+        username: message.name,
+        message: message.message,
+        createdAt: message.createdAt,
+        senderClass: message.senderClass,
+        dateClass: message.dateClass
+    });
+    messagesContainer.insertAdjacentHTML('beforeend', html);
+};
+
 const showMessages = (message) => {
-    if (message.messageType) {
-        const html = Mustache.render(Locationtemplate, {
-            messageId: message.messageId,
-            username: message.name,
-            message: message.message,
-            createdAt: message.createdAt,
-            senderClass: message.senderClass,
-            dateClass: message.dateClass
-        });
-        messagesContainer.insertAdjacentHTML('beforeend', html);
-    } else {
-        const html = Mustache.render(textTemplate, {
-            messageId: message.messageId,
-            username: message.name,
-            message: message.message,
-            createdAt: message.createdAt,
-            senderClass: message.senderClass,
-            dateClass: message.dateClass
-        });
-        messagesContainer.insertAdjacentHTML('beforeend', html);
+    let template;
+    switch (message.messageType) {
+        case 2:
+            template = picturetemplate;
+            break;
+        case 1:
+            template = Locationtemplate;
+            break;
+        default:
+            template = textTemplate;
+            break;
     }
-}
+    renderMessage(message, template);
+};
 
 function showNotification(userName, message) {
     if (!window.Notification) {
@@ -136,6 +141,24 @@ socket.on("LocationMessage", (message) => {
             senderClass: sender == message.from ? "my-message float-right" : "other-message",
             dateClass: sender == message.from ? "text-right" : "text-left",
             messageType: 1
+        }
+        showMessages(tempMessage)
+    }
+    // $('.chat-history').animate({ scrollTop: 9999 }, 'slow');
+    $("#refreshContacts").click();
+    autoScroll();
+});
+
+socket.on("PictureMessage", (message) => {
+    if ($("#reciver").val() == message.from || sender == message.from) {
+        const tempMessage = {
+            messageId: message.messageId,
+            username: message.username,
+            message: message.text,
+            createdAt: moment(message.createdAt).format("h:mm a"),
+            senderClass: sender == message.from ? "my-message float-right" : "other-message",
+            dateClass: sender == message.from ? "text-right" : "text-left",
+            messageType: 2
         }
         showMessages(tempMessage)
     }
@@ -443,6 +466,9 @@ $('#selectImageBtnInput').change(function (event) {
 $('#send-picture-message').click(function () {
     const formData = new FormData();
 
+    const from = sender;
+    const to = $("#reciver").val();
+
     // Append all selected files to the FormData object
     for (let i = 0; i < selectedImageFiles.length; i++) {
         formData.append('images', selectedImageFiles[i]);
@@ -456,8 +482,13 @@ $('#send-picture-message').click(function () {
         contentType: false,
         processData: false,
         success: function (response) {
-            console.log('Images submitted successfully');
-            console.log(response);
+            const fileList = response.fileList;
+            fileList.forEach((message) => {
+                socket.emit("sendPictureMessage", { message, from, to }, (msg) => {
+
+                })
+                console.log(message);
+            })
             $("#send-picture-container-main").html("");
             $("#send-picture-icon").click();
         },
@@ -473,7 +504,7 @@ $('#selectImageBtn').click(function () {
 });
 
 // Handle click on image block to display full screen image
-$(document).on('click', '.imageBlock img', function () {
+$(document).on('click', '.imageBlock img,.messageImage', function () {
     const src = $(this).attr('src');
     $('#fullScreenImage').attr('src', src);
     $('#imageModal').fadeIn(); // Fade in the modal

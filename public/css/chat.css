@@ -320,6 +320,16 @@ span.message-data-time {
     font-size: 15px;
 }
 
+#fullScreenImage {
+    object-fit: contain;
+    background-color: transparent;
+}
+
+.messageImage {
+    max-height: 400px;
+    object-fit: cover;
+}
+
 .online,
 .offline,
 .me {

@@ -51,6 +51,21 @@ const socket = (io) => {
             callback("Location sent.");
         });
 
+        socket.on("sendPictureMessage", async ({ message, from, to }, callback) => {
+            const user = await getUser(from);
+            if (message != '') {
+                let conversationData = await getConversationId(to, from);
+                let conversationId = conversationData[0].conversationId;
+                const messageId = await saveMessage(user[0].name, message, from, to, 2);
+                socket.broadcast.to(conversationId).emit("PictureMessage", generateMessage(user[0].name, message, from, messageId));
+                if (from != to) {
+                    io.to(from).emit("PictureMessage", generateMessage(user[0].name, message, from, messageId));
+                }
+                io.emit("showNotification", { senderNotifincation: from, reciverNotification: to, userName: user[0].name, message })
+                callback("OK!");
+            }
+        });
+
         socket.on("disconnect", () => {
             const user = markOffline(socket.id);
             // if (user) {
