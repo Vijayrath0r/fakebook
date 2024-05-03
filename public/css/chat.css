@@ -523,6 +523,22 @@ span.message-data-time {
     cursor: pointer;
 }
 
+/* width */
+#messages::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Handle */
+#messages::-webkit-scrollbar-thumb {
+    background: gray;
+    border-radius: 10px;
+}
+
+/* Handle on hover */
+#messages::-webkit-scrollbar-thumb:hover {
+    background: #003361;
+}
+
 @keyframes waviy {
 
     0%,
