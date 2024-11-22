@@ -254,6 +254,7 @@ const changeReciver = (reciver) => {
             $('.chat-history').animate({ scrollTop: 9999 }, 'slow');
             autoScroll();
         }
+        initMap();
     })
     $("#reciver").val(reciver)
     $('.userList').removeClass('active');
@@ -538,6 +539,41 @@ $('#messages').on('scroll', function () {
             let newScrollHeight = $(this)[0].scrollHeight;
             // Set scrollTop to maintain the position
             $(this).scrollTop(newScrollHeight - oldScrollHeight);
+            initMap();
         });
     }
 });
+function getLatLngFromUrl(url) {
+    const urlParams = new URLSearchParams(new URL(url).search);
+    const q = urlParams.get('q');
+    if (q) {
+        const [lat, lng] = q.split(',').map(Number);
+        if (!isNaN(lat) && !isNaN(lng)) {
+            return { lat, lng };
+        }
+    }
+    return null;
+}
+function initMap() {
+    document.querySelectorAll('[id^="map-"]').forEach(function (mapElement) {
+        const messageId = mapElement.id.replace('map-', '');
+        const messageElement = document.getElementById(messageId);
+        const url = messageElement.getAttribute('data-url');
+
+        const latLng = getLatLngFromUrl(url);
+
+        if (latLng) {
+            const map = new google.maps.Map(mapElement, {
+                zoom: 13,
+                center: latLng
+            });
+
+            new google.maps.Marker({
+                position: latLng,
+                map: map
+            });
+        } else {
+            console.error('Invalid URL for message ID:', messageId);
+        }
+    });
+}

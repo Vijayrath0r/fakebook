@@ -199,13 +199,16 @@
         {{/messages}}
     </script>
     <script id="Locationmessage-template" type="text/html">
-        <li class="clearfix {{dateClass}}" id="{{messageId}}">
+        <li class="clearfix {{dateClass}}" id="{{messageId}}" data-url="{{message}}">
             <div class="message-data {{dateClass}}">
                 <span class="message-data-time">{{createdAt}}</span>
             </div>
-            <div class="message {{senderClass}}"> <iframe src="{{message}}&amp;t=&amp;z=13&amp;ie=UTF8&amp;iwloc=&amp;output=embed" width=300 height=150 allowfullscreen></iframe> </div>
+            <div class="message {{senderClass}}">
+                <div id="map-{{messageId}}" style="width: 300px; height: 150px;"></div>
+            </div>
         </li>
     </script>
+
 
     <script id="picturemessage-template" type="text/html">
         <li class="clearfix {{dateClass}}" id="{{messageId}}">
@@ -284,6 +287,8 @@
     <script src="./libraries/sweetalert2.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/chat.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=<%= googleMapsApiKey %>&callback=initMap"
+        async defer></script>
 </body>
 
 </html>

@@ -3,10 +3,10 @@ const express = require("express");
 const Users = require('../models/users')
 const { addUser } = require("../utils/users.js")
 const router = express.Router();
-
+const googleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY;
 router.get('/', async (req, res) => {
     if (req.session.user && req.session.user._id) {
-        res.render('chat', { user: req.session.user });
+        res.render('chat', { user: req.session.user, googleMapsApiKey });
     } else {
         const error = req.flash('error')[0] || null; // Get the flash message
         res.render('index', { error });
@@ -14,7 +14,7 @@ router.get('/', async (req, res) => {
 })
 router.get('/login', async (req, res) => {
     if (req.session.user && req.session.user._id) {
-        res.render('chat', { user: req.session.user });
+        res.render('chat', { user: req.session.user, googleMapsApiKey });
     } else {
         res.redirect('/');
     }
@@ -51,7 +51,7 @@ router.post('/login', async (req, res) => {
         const user = await Users.findByCredentials(req.body.email, req.body.password)
         req.session.user = user;
         req.session.save();
-        res.render('chat', { user });
+        res.render('chat', { user, googleMapsApiKey });
     } catch (e) {
         // Set a flash message
         console.log(e);
